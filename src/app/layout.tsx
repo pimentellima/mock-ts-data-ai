@@ -35,6 +35,7 @@ export default function RootLayout({
                                     Created with ❤️ by{" "}
                                 </span>
                                 <Link
+                                    target="_blank"
                                     href={"https://github.com/pimentellima"}
                                     className="text-primary opacity-85 hover:opacity-100
                                 transition-opacity hover:underline underline-offset-2"
@@ -44,7 +45,10 @@ export default function RootLayout({
                                 .
                             </p>
                             <Link
-                                href={"https://github.com/pimentellima"}
+                                target="_blank"
+                                href={
+                                    "https://github.com/pimentellima/mock-ts-data-ai"
+                                }
                                 className="text-white hover:opacity-100 opacity-70
                                 transition-opacity"
                             >
