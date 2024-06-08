@@ -52,7 +52,7 @@ export default function RootLayout({
                                 className="text-white hover:opacity-100 opacity-70
                                 transition-opacity"
                             >
-                                <GithubIcon className="w-10 h-10 fill-black dark:fill-white" />
+                                <GithubIcon className="w-10 h-10 fill-primary" />
                             </Link>
                         </footer>
                     </div>
