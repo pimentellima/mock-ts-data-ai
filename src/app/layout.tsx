@@ -39,14 +39,14 @@ export default function RootLayout({
                                 >
                                     Generate
                                 </Link>
+                            </div>
+                            <div className="flex gap-4 items-center">
                                 <Link
                                     className="hover:underline underline-offset-4 text-sm"
                                     href="/buy-credits"
                                 >
                                     Buy credits
                                 </Link>
-                            </div>
-                            <div className="flex gap-2 items-center">
                                 {userId ? (
                                     <UserProfile />
                                 ) : (
