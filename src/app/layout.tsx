@@ -12,7 +12,6 @@ import UserDialog from "./user-dialog"
 import { db } from "@/drizzle/db"
 import { usage } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
-import { userInfo } from "os"
 
 const inter = Inter({ subsets: ["latin"] })
 

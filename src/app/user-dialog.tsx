@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/dialog"
 import { useClerk } from "@clerk/nextjs"
 import { User } from "@clerk/nextjs/server"
+import { useQuery } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { getUserCredits } from "./actions"
 
 export default function UserDialog({
     user,
@@ -24,6 +26,11 @@ export default function UserDialog({
 }) {
     const [open, setOpen] = useState(false)
     const { signOut } = useClerk()
+    const { data: credits } = useQuery({
+        initialData: userCredits,
+        queryFn: async () => await getUserCredits(),
+        queryKey: ["user credits", user.id],
+    })
 
     return (
         <Dialog onOpenChange={(open) => setOpen(open)} open={open}>
@@ -50,7 +57,7 @@ export default function UserDialog({
                         <div className="">{user?.fullName}</div>
                     </div>
                     <div className="mt-2 flex flex-col">
-                        {`Remaining credits: ${userCredits}`}
+                        {`Remaining credits: ${credits}`}
                         <Link
                             onClick={() => setOpen(false)}
                             href="/buy-credits"

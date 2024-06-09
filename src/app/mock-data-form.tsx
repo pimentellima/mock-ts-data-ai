@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { generateMockData } from "./actions"
+import { generateMockData, getUserCredits } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Dispatch, SetStateAction, useMemo, useState } from "react"
 import CodeEditor from "@uiw/react-textarea-code-editor"
@@ -27,6 +27,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { useToast } from "@/components/ui/use-toast"
+import { useSession } from "@clerk/nextjs"
+import { ToastAction } from "@/components/ui/toast"
+import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 
 function extractTypesAndInterfaces(tsCode: string) {
     const typePattern = /type\s+(\w+)\s*=\s*([^;]*);?/g
@@ -90,6 +94,9 @@ export default function MockDataForm({
         >
     >
 }) {
+    const queryClient = useQueryClient()
+    const { session, isSignedIn } = useSession()
+    const router = useRouter()
     const { toast } = useToast()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -103,13 +110,13 @@ export default function MockDataForm({
                     name: "User",
                     typeDefinition:
                         "interface User {\n  id: number\n  name: string\n  age: number\n}",
-                    maxNumberOfMocks: "5",
+                    maxNumberOfMocks: "25",
                 },
                 {
                     name: "Friend",
                     typeDefinition:
                         "interface Friend {\n  userId: number\n  friendId: number\n}",
-                    maxNumberOfMocks: "10",
+                    maxNumberOfMocks: "25",
                 },
             ],
         },
@@ -122,10 +129,38 @@ export default function MockDataForm({
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+            if (!isSignedIn) {
+                toast({
+                    title: "You have to sign in to generate data",
+                    action: (
+                        <ToastAction
+                            onClick={() => router.push("sign-in")}
+                            altText="Sign in"
+                        >
+                            Sign in
+                        </ToastAction>
+                    ),
+                })
+                return
+            }
+            setResult(null)
             const { types, description } = values
-            const result = await generateMockData({ types, description })
-            setResult(result)
-        } catch {
+            const response = await generateMockData({ types, description })
+            if (response.error) {
+                toast({
+                    title: "An error occurred",
+                    description: response.error,
+                    variant: "destructive",
+                })
+                return
+            }
+            if (response.result) {
+                setResult(response.result)
+                queryClient.refetchQueries({
+                    queryKey: ["user credits", session.user.id],
+                })
+            }
+        } catch (e) {
             toast({
                 title: "An error occurred",
                 description: "Failed to generate mock data.",
@@ -157,7 +192,7 @@ export default function MockDataForm({
                                             types.map(({ name, type }) => ({
                                                 name,
                                                 typeDefinition: type,
-                                                maxNumberOfMocks: "5",
+                                                maxNumberOfMocks: "25",
                                             }))
                                         )
                                     }}
@@ -227,7 +262,7 @@ export default function MockDataForm({
                                             </FormLabel>
                                             <FormControl>
                                                 <Select
-                                                    defaultValue="25"
+                                                    value={field.value}
                                                     onValueChange={(value) =>
                                                         field.onChange(value)
                                                     }
