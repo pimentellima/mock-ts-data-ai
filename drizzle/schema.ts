@@ -1,12 +1,8 @@
-import {
-    pgTable,
-    serial,
-    text,
-    integer,
-} from "drizzle-orm/pg-core"
+import { pgTable, serial, text, integer } from "drizzle-orm/pg-core"
+import { initialCredits } from "@/constants"
 
 export const usage = pgTable("usage", {
     id: serial("id").primaryKey(),
-    userId: text("user_id").unique(),
-    credits: integer("credits").notNull().default(0),
+    userId: text("user_id").notNull().unique(),
+    credits: integer("credits").notNull().default(initialCredits),
 })
