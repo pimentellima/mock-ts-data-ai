@@ -7,6 +7,10 @@ import Image from "next/image"
 import { Toaster } from "@/components/ui/toaster"
 import GithubIcon from "@/components/github-icon"
 import { Button } from "@/components/ui/button"
+import SignInModal from "@/components/sign-in-modal"
+import { auth } from "@clerk/nextjs/server"
+import { UserProfile } from "@clerk/nextjs"
+import { redirect } from "next/navigation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,54 +24,75 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    const { userId } = auth()
+
     return (
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
+                    <Toaster />
                     <div className="min-h-screen flex flex-col justify-between">
                         <header
                             className="sticky top-0 h-14 py-2 border-b w-full bg-background
                             flex justify-between items-center px-40 z-10"
                         >
-                            <Button variant={"link"}>Pricing</Button>
-                            <div className="flex gap-2">
-                                <Button variant={"secondary"}>Login</Button>
-                                <Button>Sign up</Button>
+                            <Link
+                                className="hover:underline underline-offset-4 text-sm"
+                                href="/buy-credits"
+                            >
+                                Buy credits
+                            </Link>
+                            <div className="flex gap-2 items-center">
+                                {userId ? (
+                                    <UserProfile />
+                                ) : (
+                                    <>
+                                        <Link
+                                            className="hover:underline underline-offset-4 text-sm"
+                                            href="/sign-in"
+                                        >
+                                            Sign in
+                                        </Link>
+                                        <Link
+                                            className="hover:underline underline-offset-4 text-sm"
+                                            href="/sign-up"
+                                        >
+                                            Sign up
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </header>
-                        <div className="mx-40">
-                            <Toaster />
-                            {children}
-                            <footer
-                                className="h-20 mt-5 px-5 border-t w-full 
-                            flex items-center justify-between"
-                            >
-                                <p>
-                                    <span className="opacity-85">
-                                        Created with ❤️ by{" "}
-                                    </span>
-                                    <Link
-                                        target="_blank"
-                                        href={"https://github.com/pimentellima"}
-                                        className="text-primary opacity-85 hover:opacity-100
-                                transition-opacity hover:underline underline-offset-2"
-                                    >
-                                        pimentellima
-                                    </Link>
-                                    .
-                                </p>
+                        <div className="mx-40">{children}</div>
+                        <footer
+                            className="h-14 mt-5 border-t w-full 
+                            flex items-center justify-between px-40"
+                        >
+                            <p>
+                                <span className="opacity-85">
+                                    Created with ❤️ by{" "}
+                                </span>
                                 <Link
                                     target="_blank"
-                                    href={
-                                        "https://github.com/pimentellima/mock-ts-data-ai"
-                                    }
-                                    className="text-white hover:opacity-100 opacity-70
-                                transition-opacity"
+                                    href={"https://github.com/pimentellima"}
+                                    className="text-primary opacity-85 hover:opacity-100
+                                transition-opacity hover:underline underline-offset-2"
                                 >
-                                    <GithubIcon className="w-10 h-10 fill-primary" />
+                                    pimentellima
                                 </Link>
-                            </footer>
-                        </div>
+                                .
+                            </p>
+                            <Link
+                                target="_blank"
+                                href={
+                                    "https://github.com/pimentellima/mock-ts-data-ai"
+                                }
+                                className="text-white hover:opacity-100 opacity-70
+                                transition-opacity"
+                            >
+                                <GithubIcon className="w-10 h-10 fill-primary" />
+                            </Link>
+                        </footer>
                     </div>
                 </Providers>
             </body>
