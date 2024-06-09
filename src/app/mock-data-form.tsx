@@ -16,6 +16,13 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -219,13 +226,26 @@ export default function MockDataForm({
                                                 {arrayField.name}
                                             </FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    type="number"
-                                                    className="mt-2"
-                                                    placeholder="Click here..."
-                                                />
+                                                <Select
+                                                    defaultValue="25"
+                                                    onValueChange={(value) =>
+                                                        field.onChange(value)
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-[180px]">
+                                                        <SelectValue
+                                                            placeholder={`Click here`}
+                                                        />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="25">
+                                                            25
+                                                        </SelectItem>
+                                                        <SelectItem value="50">
+                                                            50
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </FormControl>
                                         </FormItem>
                                     )}
