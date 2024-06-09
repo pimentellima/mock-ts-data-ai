@@ -33,17 +33,10 @@ export default function Page() {
                 </CardContent>
                 <CardFooter className="flex justify-end">
                     {userId ? (
-                        <Link
-                            href={""}
-                            className="p-3 text-sm text-primary bg-secondary"
-                        >
-                            Buy now
-                        </Link>
+                        <Link href={""}>Buy now</Link>
                     ) : (
                         <Dialog>
-                            <DialogTrigger className="p-3 text-sm text-primary bg-secondary">
-                                Buy now
-                            </DialogTrigger>
+                            <DialogTrigger>Buy now</DialogTrigger>
                             <DialogContent className="flex items-center flex-col">
                                 <DialogHeader>
                                     <DialogTitle>Not signed in</DialogTitle>
@@ -53,7 +46,7 @@ export default function Page() {
                                     </DialogDescription>
                                 </DialogHeader>
                                 <Link
-                                    className="p-3 text-sm text-primary bg-secondary"
+                                    className="hover:underline underline-offset-4 text-sm"
                                     href="/sign-in"
                                 >
                                     Sign in
