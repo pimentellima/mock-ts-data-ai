@@ -29,7 +29,7 @@ export default function Page() {
                     <CardDescription>300 Credits ($5)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Usage per call: 1 credit per 25 itens generated</p>
+                    <p>Usage: 1 credit per 25 itens generated</p>
                 </CardContent>
                 <CardFooter className="flex justify-end">
                     {userId ? (
