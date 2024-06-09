@@ -1,16 +1,13 @@
+import GithubIcon from "@/components/github-icon"
+import { Toaster } from "@/components/ui/toaster"
+import { UserProfile } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
+import { ArrowLeft } from "lucide-react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import Link from "next/link"
 import "./globals.css"
 import Providers from "./providers"
-import Link from "next/link"
-import Image from "next/image"
-import { Toaster } from "@/components/ui/toaster"
-import GithubIcon from "@/components/github-icon"
-import { Button } from "@/components/ui/button"
-import SignInModal from "@/components/sign-in-modal"
-import { auth } from "@clerk/nextjs/server"
-import { UserProfile } from "@clerk/nextjs"
-import { redirect } from "next/navigation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,7 +22,6 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     const { userId } = auth()
-
     return (
         <html lang="en">
             <body className={inter.className}>
@@ -36,12 +32,20 @@ export default function RootLayout({
                             className="sticky top-0 h-14 py-2 border-b w-full bg-background
                             flex justify-between items-center px-40 z-10"
                         >
-                            <Link
-                                className="hover:underline underline-offset-4 text-sm"
-                                href="/buy-credits"
-                            >
-                                Buy credits
-                            </Link>
+                            <div className="flex gap-2 items-center">
+                                <Link
+                                    className="hover:underline underline-offset-4 text-sm"
+                                    href="/"
+                                >
+                                    Generate
+                                </Link>
+                                <Link
+                                    className="hover:underline underline-offset-4 text-sm"
+                                    href="/buy-credits"
+                                >
+                                    Buy credits
+                                </Link>
+                            </div>
                             <div className="flex gap-2 items-center">
                                 {userId ? (
                                     <UserProfile />
