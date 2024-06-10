@@ -54,20 +54,20 @@ export default function UserDialog({
                                 <UserIcon />
                             </AvatarFallback>
                         </Avatar>
-                        <div className="">{user?.fullName}</div>
-                    </div>
-                    <div className="mt-2 flex flex-col">
-                        {`Remaining credits: ${credits}`}
-                        <Link
-                            onClick={() => setOpen(false)}
-                            href="/buy-credits"
-                            className="hover:underline underline-offset-4"
-                        >
-                            Buy credits
-                        </Link>
+                        <div className="flex flex-col text-sm">
+                            <p>{user?.firstName}</p>
+                            <p>{`Remaining credits: ${credits}`}</p>
+                        </div>
                     </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="flex gap-2 items-center justify-end">
+                    <Link
+                        onClick={() => setOpen(false)}
+                        href="/buy-credits"
+                        className="hover:underline underline-offset-4"
+                    >
+                        Buy credits
+                    </Link>
                     <Button
                         variant={"secondary"}
                         onClick={() => signOut({ redirectUrl: "/" })}
