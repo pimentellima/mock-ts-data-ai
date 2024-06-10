@@ -1,22 +1,6 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogDescription,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { auth } from "@clerk/nextjs/server"
-import Link from "next/link"
+import BuyCreditsForm from "./buy-credits-form"
 
 export default function Page() {
     const { userId } = auth()
@@ -26,35 +10,10 @@ export default function Page() {
             <Card className="bg-primary-foreground">
                 <CardHeader>
                     <CardTitle>Buy credits</CardTitle>
-                    <CardDescription>300 Credits ($5)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Usage: 1 credit per 25 itens generated</p>
+                    <BuyCreditsForm isAuth={!!userId} />
                 </CardContent>
-                <CardFooter className="flex justify-end">
-                    {userId ? (
-                        <Link href={""}>Buy now</Link>
-                    ) : (
-                        <Dialog>
-                            <DialogTrigger>Buy now</DialogTrigger>
-                            <DialogContent className="flex items-center flex-col">
-                                <DialogHeader>
-                                    <DialogTitle>Not signed in</DialogTitle>
-                                    <DialogDescription>
-                                        You have to sign in to your account to
-                                        buy credits
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <Link
-                                    className="hover:underline underline-offset-4 text-sm"
-                                    href="/sign-in"
-                                >
-                                    Sign in
-                                </Link>
-                            </DialogContent>
-                        </Dialog>
-                    )}
-                </CardFooter>
             </Card>
         </div>
     )
