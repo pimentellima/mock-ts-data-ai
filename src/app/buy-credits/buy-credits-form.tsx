@@ -13,7 +13,7 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel
+    FormLabel,
 } from "@/components/ui/form"
 import {
     Select,
@@ -27,7 +27,12 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-const schema = z.object({ credits: z.enum(["150", "300", "500"]) })
+const schema = z.object({ credits: z.enum(["150", "300", "900"]) })
+
+const currency = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+})
 
 export default function BuyCreditsForm({ isAuth }: { isAuth: boolean }) {
     const form = useForm<z.infer<typeof schema>>({
@@ -45,8 +50,8 @@ export default function BuyCreditsForm({ isAuth }: { isAuth: boolean }) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                Select the number of credits to buy (1 credit
-                                per 25 itens generated)
+                                Select the number of credits to buy (1 credit =
+                                25 itens generated)
                             </FormLabel>
                             <FormControl>
                                 <Select
@@ -61,9 +66,21 @@ export default function BuyCreditsForm({ isAuth }: { isAuth: boolean }) {
                                         />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="150">150</SelectItem>
-                                        <SelectItem value="300">300</SelectItem>
-                                        <SelectItem value="500">500</SelectItem>
+                                        <SelectItem value="150">
+                                            {`150 credits (${currency.format(
+                                                2.5
+                                            )})`}
+                                        </SelectItem>
+                                        <SelectItem value="300">
+                                            {`300 credits (${currency.format(
+                                                5
+                                            )})`}
+                                        </SelectItem>
+                                        <SelectItem value="900">
+                                            {`900 credits (${currency.format(
+                                                15
+                                            )})`}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </FormControl>
