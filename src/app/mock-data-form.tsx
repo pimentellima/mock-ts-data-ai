@@ -56,21 +56,26 @@ function extractTypesAndInterfaces(tsCode: string) {
 }
 
 export const formSchema = z.object({
-    typescriptCode: z.string().superRefine((val, ctx) => {
-        const types = extractTypesAndInterfaces(val).map(({ name }) => name)
-        const duplicates = types.filter(
-            (item, index) => types.indexOf(item) !== index
-        )
-        if (duplicates.length !== 0) {
-            return ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Duplicate types/interfaces are not allowed.",
-            })
-        }
-    }),
+    typescriptCode: z
+        .string()
+        .max(1000, {
+            message: "Your typescript code exceeds the character limit.",
+        })
+        .superRefine((val, ctx) => {
+            const types = extractTypesAndInterfaces(val).map(({ name }) => name)
+            const duplicates = types.filter(
+                (item, index) => types.indexOf(item) !== index
+            )
+            if (duplicates.length !== 0) {
+                return ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "You have duplicate types/interfaces.",
+                })
+            }
+        }),
     description: z
         .string()
-        .max(300, { message: "Description is too large" })
+        .max(300, { message: "Your description exceeds the character limit." })
         .optional(),
     types: z.array(
         z.object({
@@ -288,9 +293,8 @@ export default function MockDataForm({
                             ))}
                         </div>
                     )}
-                    <FormDescription>
-                        The maximum number of mock data entries you want to
-                        generate.
+                    <FormDescription className="mt-1">
+                        The number of mock data entries you want to generate.
                     </FormDescription>
                 </div>
                 <Button
