@@ -1,13 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+import { useElements, useStripe } from "@stripe/react-stripe-js"
+
 import {
     Form,
     FormControl,
@@ -22,10 +16,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useToast } from "@/components/ui/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import Link from "next/link"
+import { ExternalLink } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { createCheckoutSession } from "./actions"
 
 const schema = z.object({ credits: z.enum(["150", "300", "900"]) })
 
@@ -34,16 +31,61 @@ const currency = new Intl.NumberFormat("en-US", {
     currency: "USD",
 })
 
-export default function BuyCreditsForm({ isAuth }: { isAuth: boolean }) {
+export default function CheckoutForm() {
+    const stripe = useStripe()
+    const elements = useElements()
+    const router = useRouter()
+    const { toast } = useToast()
+
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         mode: "onChange",
         defaultValues: { credits: "300" },
     })
 
+    const onSubmit = async () => {
+        const credits = form.getValues("credits")
+
+        if (elements == null || stripe == null) {
+            return
+        }
+
+        const { error: submitError } = await elements.submit()
+        if (submitError?.message) {
+            toast({
+                title: "An error occurred",
+                description: submitError.message,
+                variant: "destructive",
+            })
+            return
+        }
+
+        const res = await createCheckoutSession({
+            credits: parseInt(credits),
+        })
+
+        if (res.error) {
+            toast({
+                title: "An error occurred",
+                description: res.error,
+                variant: "destructive",
+            })
+            return
+        }
+        if (!res.sessionUrl) {
+            toast({
+                title: "An error occurred",
+                description: "No session url returned",
+                variant: "destructive",
+            })
+            return
+        }
+        router.push(res.sessionUrl)
+    }
+
     return (
         <Form {...form}>
-            <form>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     name="credits"
                     control={form.control}
@@ -60,7 +102,7 @@ export default function BuyCreditsForm({ isAuth }: { isAuth: boolean }) {
                                         field.onChange(value)
                                     }
                                 >
-                                    <SelectTrigger className="w-[180px]">
+                                    <SelectTrigger>
                                         <SelectValue
                                             placeholder={`Click here`}
                                         />
@@ -87,31 +129,15 @@ export default function BuyCreditsForm({ isAuth }: { isAuth: boolean }) {
                         </FormItem>
                     )}
                 />
-                <div className="flex mt-1 justify-end">
-                    {isAuth ? (
-                        <Button variant={"secondary"}>
-                            Checkout on stripe
-                        </Button>
-                    ) : (
-                        <Dialog>
-                            <DialogTrigger>Buy now</DialogTrigger>
-                            <DialogContent className="flex items-center flex-col">
-                                <DialogHeader>
-                                    <DialogTitle>Not signed in</DialogTitle>
-                                    <DialogDescription>
-                                        You have to sign in to your account to
-                                        buy credits
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <Link
-                                    className="hover:underline underline-offset-4 text-sm"
-                                    href="/sign-in"
-                                >
-                                    Sign in
-                                </Link>
-                            </DialogContent>
-                        </Dialog>
-                    )}
+                <div className="flex mt-3 justify-end">
+                    <Button
+                        className="flex items-center gap-1"
+                        disabled={form.formState.isSubmitting}
+                        variant={"default"}
+                    >
+                        Checkout on stripe
+                        <ExternalLink className="h-4 w-4" />
+                    </Button>
                 </div>
             </form>
         </Form>
