@@ -1,12 +1,6 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { generateMockData, getUserCredits } from "./actions"
 import { Button } from "@/components/ui/button"
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
-import CodeEditor from "@uiw/react-textarea-code-editor"
 import {
     Form,
     FormControl,
@@ -23,14 +17,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { z } from "zod"
+import { Textarea } from "@/components/ui/textarea"
+import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "@clerk/nextjs"
-import { ToastAction } from "@/components/ui/toast"
-import { useRouter } from "next/navigation"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
+import CodeEditor from "@uiw/react-textarea-code-editor"
+import { useRouter } from "next/navigation"
+import { Dispatch, SetStateAction } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { z } from "zod"
+import { generateMockData } from "./actions"
 
 function extractTypesAndInterfaces(tsCode: string) {
     const typePattern = /type\s+(\w+)\s*=\s*([^;]*);?/g
@@ -202,10 +200,9 @@ export default function MockDataForm({
                                         )
                                     }}
                                     padding={15}
-                                    className="border rounded-sm"
+                                    className="border rounded-sm bg-inherit"
                                     style={{
                                         fontSize: 14,
-                                        backgroundColor: "inherit",
                                     }}
                                 />
                             </FormControl>
