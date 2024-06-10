@@ -47,7 +47,7 @@ export default function ResultsList({
             </div>
             {selectedResultIndex !== null && (
                 <div>
-                    <div className="max-h-[600px] overflow-y-auto">
+                    <div className="h-[500px] overflow-y-auto">
                         <div>
                             <pre>
                                 {JSON.stringify(
