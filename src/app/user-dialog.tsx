@@ -60,16 +60,17 @@ export default function UserDialog({
                         </div>
                     </div>
                 </div>
-                <DialogFooter className="flex gap-2 items-center justify-end">
-                    <Link
-                        onClick={() => setOpen(false)}
-                        href="/buy-credits"
-                        className="hover:underline underline-offset-4"
-                    >
-                        Buy credits
-                    </Link>
+                <DialogFooter className="flex items-center justify-end">
+                    <Button asChild variant={"link"}>
+                        <Link
+                            onClick={() => setOpen(false)}
+                            href="/buy-credits"
+                        >
+                            Buy credits
+                        </Link>
+                    </Button>
                     <Button
-                        variant={"secondary"}
+                        variant={"link"}
                         onClick={() => signOut({ redirectUrl: "/" })}
                     >
                         Sign out

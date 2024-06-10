@@ -12,6 +12,7 @@ import UserDialog from "./user-dialog"
 import { db } from "@/drizzle/db"
 import { usage } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
+import { Button } from "@/components/ui/button"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -47,20 +48,17 @@ export default async function RootLayout({
                             flex justify-between items-center px-40 z-10"
                         >
                             <div className="flex gap-2 items-center">
-                                <Link
-                                    className="hover:underline underline-offset-4 text-sm"
-                                    href="/"
-                                >
-                                    Generate
-                                </Link>
+                                <Button asChild variant={"link"}>
+                                    <Link href="/">Generate</Link>
+                                </Button>
                             </div>
                             <div className="flex gap-4 items-center">
-                                <Link
-                                    className="hover:underline underline-offset-4 text-sm"
-                                    href="/buy-credits"
-                                >
-                                    Buy credits
-                                </Link>
+                                <Button asChild variant={"link"}>
+                                    <Link href="/buy-credits">
+                                        {" "}
+                                        Buy credits
+                                    </Link>
+                                </Button>
                                 {userId && user ? (
                                     <UserDialog
                                         user={JSON.parse(JSON.stringify(user))}
@@ -68,18 +66,12 @@ export default async function RootLayout({
                                     />
                                 ) : (
                                     <>
-                                        <Link
-                                            className="hover:underline underline-offset-4 text-sm"
-                                            href="/sign-in"
-                                        >
-                                            Sign in
-                                        </Link>
-                                        <Link
-                                            className="hover:underline underline-offset-4 text-sm"
-                                            href="/sign-up"
-                                        >
-                                            Sign up
-                                        </Link>
+                                        <Button asChild variant={"link"}>
+                                            <Link href="/sign-in">Sign in</Link>
+                                        </Button>
+                                        <Button asChild variant={"link"}>
+                                            <Link href="/sign-up">Sign up</Link>
+                                        </Button>
                                     </>
                                 )}
                             </div>
@@ -90,29 +82,26 @@ export default async function RootLayout({
                             flex items-center justify-between px-40"
                         >
                             <p>
-                                <span className="opacity-85">
-                                    Created by{" "}
-                                </span>
+                                <span className="opacity-85">Created by </span>
+                                <Button asChild variant={"link"}>
+                                    <Link
+                                        target="_blank"
+                                        href={"https://github.com/pimentellima"}
+                                    >
+                                        pimentellima
+                                    </Link>
+                                </Button>
+                            </p>
+                            <Button asChild variant={"link"}>
                                 <Link
                                     target="_blank"
-                                    href={"https://github.com/pimentellima"}
-                                    className="text-primary opacity-85 hover:opacity-100
-                                transition-opacity hover:underline underline-offset-2"
+                                    href={
+                                        "https://github.com/pimentellima/mock-ts-data-ai"
+                                    }
                                 >
-                                    pimentellima
+                                    <GithubIcon className="w-10 h-10 fill-primary" />
                                 </Link>
-                                .
-                            </p>
-                            <Link
-                                target="_blank"
-                                href={
-                                    "https://github.com/pimentellima/mock-ts-data-ai"
-                                }
-                                className="text-white hover:opacity-100 opacity-70
-                                transition-opacity"
-                            >
-                                <GithubIcon className="w-10 h-10 fill-primary" />
-                            </Link>
+                            </Button>
                         </footer>
                     </div>
                 </Providers>

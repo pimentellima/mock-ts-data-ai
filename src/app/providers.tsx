@@ -11,7 +11,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             <ClerkProvider>
                 <NextThemesProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="dark"
                     disableTransitionOnChange
                 >
                     {children}

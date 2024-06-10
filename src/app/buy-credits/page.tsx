@@ -91,7 +91,7 @@ export default async function Page({
                         Add credits to your account to use to generate data
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-sm">
                     {userId ? (
                         <Checkout />
                     ) : (

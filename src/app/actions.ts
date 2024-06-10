@@ -29,6 +29,17 @@ const outputSchema = z.object({
     ),
 })
 
+const defaultResult = [
+    {
+        resultName: "User",
+        json: '[{\n  "id": 1,\n  "name": "John Doe",\n  "age": 30\n},{\n  "id": 2,\n  "name": "Jane Smith",\n  "age": 25\n},{\n  "id": 3,\n  "name": "Alice Johnson",\n  "age": 35\n},{\n  "id": 4,\n  "name": "Bob White",\n  "age": 27\n},{\n  "id": 5,\n  "name": "Eve Brown",\n  "age": 40\n}]',
+    },
+    {
+        resultName: "Friend",
+        json: '[{\n  "userId": 1,\n  "friendId": 2\n},{\n  "userId": 2,\n  "friendId": 3\n},{\n  "userId": 3,\n  "friendId": 4\n},{\n  "userId": 4,\n  "friendId": 5\n},{\n  "userId": 5,\n  "friendId": 1\n}]',
+    },
+]
+
 export async function generateMockData(data: {
     types: {
         name: string
@@ -61,7 +72,7 @@ export async function generateMockData(data: {
 
         if (mockCreditsUsage > userUsage.credits)
             return { error: "You don't have enough credits" }
-
+/* 
         const prompt = `You will receive an array of typescript types or interfaces, a number of mocks and optionally a description and 
             will generate mock data based on those types. The output should format be an array of object with keys resultName(the name o the type) and json (the stringified formatted json data).
             The output should look contain real world-like data.
@@ -75,12 +86,12 @@ export async function generateMockData(data: {
             model: openai("gpt-3.5-turbo"),
             schema: outputSchema,
             prompt,
-        })
+        }) */
         await db
             .update(usage)
             .set({ credits: userUsage.credits - mockCreditsUsage })
             .where(eq(usage.id, userUsage.id))
-        return { result: object.results }
+        return { result: defaultResult }
     } catch {
         return { error: "Internal error" }
     }
