@@ -91,7 +91,7 @@ export default async function RootLayout({
                         >
                             <p>
                                 <span className="opacity-85">
-                                    Created with ❤️ by{" "}
+                                    Created by{" "}
                                 </span>
                                 <Link
                                     target="_blank"
