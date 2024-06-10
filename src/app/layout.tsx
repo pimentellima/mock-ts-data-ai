@@ -63,9 +63,7 @@ export default async function RootLayout({
                                 </Link>
                                 {userId && user ? (
                                     <UserDialog
-                                        user={JSON.parse(
-                                            JSON.stringify(user)
-                                        )}
+                                        user={JSON.parse(JSON.stringify(user))}
                                         userCredits={userCredits}
                                     />
                                 ) : (
@@ -88,7 +86,7 @@ export default async function RootLayout({
                         </header>
                         <div className="mx-40">{children}</div>
                         <footer
-                            className="h-14 mt-5 border-t w-full 
+                            className="h-14 mt-10 border-t w-full 
                             flex items-center justify-between px-40"
                         >
                             <p>
