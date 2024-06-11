@@ -83,25 +83,23 @@ export default async function RootLayout({
                         >
                             <p>
                                 <span className="opacity-85">Created by </span>
-                                <Button asChild variant={"link"}>
-                                    <Link
-                                        target="_blank"
-                                        href={"https://github.com/pimentellima"}
-                                    >
-                                        pimentellima
-                                    </Link>
-                                </Button>
-                            </p>
-                            <Button asChild variant={"link"}>
                                 <Link
+                                    className="hover:underline underline-offset-4 opacity-85 hover:opacity-100"
                                     target="_blank"
-                                    href={
-                                        "https://github.com/pimentellima/mock-ts-data-ai"
-                                    }
+                                    href={"https://github.com/pimentellima"}
                                 >
-                                    <GithubIcon className="w-10 h-10 fill-primary" />
+                                    pimentellima
                                 </Link>
-                            </Button>
+                            </p>
+                            <Link
+                                className="opacity-85 hover:opacity-100"
+                                target="_blank"
+                                href={
+                                    "https://github.com/pimentellima/mock-ts-data-ai"
+                                }
+                            >
+                                <GithubIcon className="w-10 h-10 fill-primary" />
+                            </Link>
                         </footer>
                     </div>
                 </Providers>
