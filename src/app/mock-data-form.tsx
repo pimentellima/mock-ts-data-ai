@@ -79,7 +79,7 @@ export const formSchema = z.object({
         z.object({
             name: z.string(),
             typeDefinition: z.string(),
-            maxNumberOfMocks: z.string(),
+            numberOfMocks: z.string(),
         })
     ),
 })
@@ -113,13 +113,13 @@ export default function MockDataForm({
                     name: "User",
                     typeDefinition:
                         "interface User {\n  id: number\n  name: string\n  age: number\n}",
-                    maxNumberOfMocks: "25",
+                    numberOfMocks: "25",
                 },
                 {
                     name: "Friend",
                     typeDefinition:
                         "interface Friend {\n  userId: number\n  friendId: number\n}",
-                    maxNumberOfMocks: "25",
+                    numberOfMocks: "25",
                 },
             ],
         },
@@ -195,7 +195,7 @@ export default function MockDataForm({
                                             types.map(({ name, type }) => ({
                                                 name,
                                                 typeDefinition: type,
-                                                maxNumberOfMocks: "25",
+                                                numberOfMocks: "25",
                                             }))
                                         )
                                     }}
@@ -254,12 +254,12 @@ export default function MockDataForm({
                             {types.map((arrayField, index) => (
                                 <FormField
                                     key={arrayField.id}
-                                    name={`types.${index}.maxNumberOfMocks`}
+                                    name={`types.${index}.numberOfMocks`}
                                     control={form.control}
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Max number of mocks for{" "}
+                                                Number of mocks for{" "}
                                                 {arrayField.name}
                                             </FormLabel>
                                             <FormControl>

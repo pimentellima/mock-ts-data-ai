@@ -24,27 +24,21 @@ const outputSchema = z.object({
     results: z.array(
         z.object({
             resultName: z.string(),
-            json: z.string(),
+            json: z
+                .string()
+                .describe(
+                    "The result of the mock data generation in JSON format. It should have the format specified in the typeDefinition and the length of the specified numberOfMocks for the resultName"
+                ),
         })
     ),
 })
 
-const defaultResult = [
-    {
-        resultName: "User",
-        json: '[{\n  "id": 1,\n  "name": "John Doe",\n  "age": 30\n},{\n  "id": 2,\n  "name": "Jane Smith",\n  "age": 25\n},{\n  "id": 3,\n  "name": "Alice Johnson",\n  "age": 35\n},{\n  "id": 4,\n  "name": "Bob White",\n  "age": 27\n},{\n  "id": 5,\n  "name": "Eve Brown",\n  "age": 40\n}]',
-    },
-    {
-        resultName: "Friend",
-        json: '[{\n  "userId": 1,\n  "friendId": 2\n},{\n  "userId": 2,\n  "friendId": 3\n},{\n  "userId": 3,\n  "friendId": 4\n},{\n  "userId": 4,\n  "friendId": 5\n},{\n  "userId": 5,\n  "friendId": 1\n}]',
-    },
-]
 
 export async function generateMockData(data: {
     types: {
         name: string
         typeDefinition: string
-        maxNumberOfMocks: string
+        numberOfMocks: string
     }[]
     description?: string
 }): Promise<{
@@ -64,35 +58,34 @@ export async function generateMockData(data: {
             where: eq(usage.userId, userId),
         })
 
-        const mockCreditsUsage = data.types.reduce(
-            (acc, curr) => acc + (curr.maxNumberOfMocks === "25" ? 1 : 2),
+        const creditsUsage = data.types.reduce(
+            (acc, curr) => acc + (curr.numberOfMocks === "25" ? 1 : 2),
             0
         )
         if (!userUsage) return { error: "Error fetching user info" }
 
-        if (mockCreditsUsage > userUsage.credits)
+        if (creditsUsage > userUsage.credits)
             return { error: "You don't have enough credits" }
-/* 
+
         const prompt = `You will receive an array of typescript types or interfaces, a number of mocks and optionally a description and 
-            will generate mock data based on those types. The output should format be an array of object with keys resultName(the name o the type) and json (the stringified formatted json data).
+            will generate mock data based on those types. The output should format be an array of object with the resultName and the generated json.
             The output should look contain real world-like data.
-            Input example: {"name":"User","typeDefinition":"interface User {\\n  id: number\\n  name: string\\n  age: number\\n}","maxNumberOfMocks":"2"}.
-            Output example: {"results": [{"resultName": "User", "json": "[{id: 1, name: 'John', age: 25}, {id: 2, name: 'Jane', age: 30}]"}]
             
             Input: ${JSON.stringify(data.types)} 
             ${`Description: ${data.description || "no description"}`}`
 
-        const { object } = await generateObject({
+        const { object, usage: tokenUsage } = await generateObject({
             model: openai("gpt-3.5-turbo"),
             schema: outputSchema,
             prompt,
-        }) */
+        })
+
         await db
             .update(usage)
-            .set({ credits: userUsage.credits - mockCreditsUsage })
+            .set({ credits: userUsage.credits - creditsUsage })
             .where(eq(usage.id, userUsage.id))
-        return { result: defaultResult }
-    } catch {
+        return { result: object.results }
+    } catch (e) {
         return { error: "Internal error" }
     }
 }
