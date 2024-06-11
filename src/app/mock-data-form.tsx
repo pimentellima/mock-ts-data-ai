@@ -106,13 +106,13 @@ export default function MockDataForm({
         mode: "onChange",
         defaultValues: {
             typescriptCode:
-                "interface User {\n  id: number\n  name: string\n  age: number\n}\n\ninterface Friend {\n  userId: number\n  friendId: number\n}",
+                "interface User {\n  id: number\n  name: string\n  }\n\ninterface Friend {\n  userId: number\n  friendId: number\n}",
             description: "",
             types: [
                 {
                     name: "User",
                     typeDefinition:
-                        "interface User {\n  id: number\n  name: string\n  age: number\n}",
+                        "interface User {\n  id: number\n  name: string\n }",
                     numberOfMocks: "25",
                 },
                 {
