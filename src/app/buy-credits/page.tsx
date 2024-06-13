@@ -47,9 +47,7 @@ export default async function Page({
 
                     <CardFooter className="flex justify-end">
                         <Button variant={"link"} asChild>
-                            <Link href={"/"}>
-                                Go back
-                            </Link>
+                            <Link href={"/"}>Go back</Link>
                         </Button>
                     </CardFooter>
                 </Card>
@@ -69,7 +67,7 @@ export default async function Page({
                     <CardContent className="text-sm">
                         <div>
                             {checkoutSession.status === "complete"
-                                ? "The credits are deposited in your account"
+                                ? "The credits have been successfully deposited into your account."
                                 : "Refresh the page to update the details"}
                         </div>
                     </CardContent>
@@ -96,7 +94,7 @@ export default async function Page({
                         <Checkout />
                     ) : (
                         <div>
-                            <p>You need to sign in to buy credits</p>
+                            <p>You need to sign in to buy credits.</p>
                             <div className="flex mt-2 justify-end">
                                 <Button asChild>
                                     <Link href={"sign-in"}>Sign in</Link>
