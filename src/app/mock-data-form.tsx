@@ -134,7 +134,7 @@ export default function MockDataForm({
         try {
             if (!isSignedIn) {
                 toast({
-                    title: "You have to sign in to generate data",
+                    title: "You have to be signed in to generate data",
                     action: (
                         <ToastAction
                             onClick={() => router.push("sign-in")}
