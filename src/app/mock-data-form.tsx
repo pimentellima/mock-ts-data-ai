@@ -20,10 +20,10 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
-import { useSession } from "@clerk/nextjs"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import CodeEditor from "@uiw/react-textarea-code-editor"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Dispatch, SetStateAction } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -98,7 +98,7 @@ export default function MockDataForm({
     >
 }) {
     const queryClient = useQueryClient()
-    const { session, isSignedIn } = useSession()
+    const { data: sessionData } = useSession()
     const router = useRouter()
     const { toast } = useToast()
     const form = useForm<z.infer<typeof formSchema>>({
@@ -132,7 +132,7 @@ export default function MockDataForm({
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            if (!isSignedIn) {
+            if (!sessionData?.user) {
                 toast({
                     title: "You have to be signed in to generate data",
                     action: (
@@ -160,7 +160,7 @@ export default function MockDataForm({
             if (response.result) {
                 setResult(response.result)
                 queryClient.refetchQueries({
-                    queryKey: ["user credits", session.user.id],
+                    queryKey: ["credits"],
                 })
             }
         } catch (e) {

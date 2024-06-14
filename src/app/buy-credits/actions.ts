@@ -1,9 +1,9 @@
 "use server"
 
-import {  creditPriceMap } from "@/constants"
-import { auth } from "@clerk/nextjs/server"
+import { creditPriceMap } from "@/constants"
 import { redirect } from "next/navigation"
 import Stripe from "stripe"
+import { auth } from "../auth/auth"
 
 export async function createCheckoutSession(params: {
     credits: number
@@ -11,8 +11,8 @@ export async function createCheckoutSession(params: {
     error?: string
     sessionUrl?: string
 }> {
-    const { userId } = auth()
-    if (!userId)
+    const session = await auth()
+    if (!session)
         return {
             error: "Unauthenticated",
         }
@@ -32,7 +32,7 @@ export async function createCheckoutSession(params: {
         const checkoutSession = await stripe.checkout.sessions.create({
             payment_intent_data: {
                 metadata: {
-                    userId,
+                    userId: session.user.id,
                     credits,
                 },
             },

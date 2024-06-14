@@ -1,5 +1,5 @@
 import { db } from "@/drizzle/db"
-import { usage } from "@/drizzle/schema"
+import { users } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
@@ -40,22 +40,21 @@ export async function POST(req: Request) {
                 return NextResponse.json(null, { status: 500 })
             }
 
-            await db.insert(usage).values({ userId }).onConflictDoNothing()
-            const userUsage = await db.query.usage.findFirst({
-                where: eq(usage.userId, userId),
+            const user = await db.query.users.findFirst({
+                where: eq(users.id, userId),
                 columns: { credits: true },
             })
 
-            if (!userUsage)
+            if (!user)
                 return NextResponse.json(
                     { message: "Error updating user usage" },
                     { status: 500 }
                 )
 
             await db
-                .update(usage)
-                .set({ credits: userUsage.credits + Number(credits) })
-                .where(eq(usage.userId, userId))
+                .update(users)
+                .set({ credits: user.credits + Number(credits) })
+                .where(eq(users.id, userId))
         }
 
         return NextResponse.json({ result: event, ok: true })

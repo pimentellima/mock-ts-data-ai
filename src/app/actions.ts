@@ -1,23 +1,22 @@
 "use server"
 
+import { db } from "@/drizzle/db"
+import { usage, users } from "@/drizzle/schema"
 import { openai } from "@ai-sdk/openai"
 import { generateObject } from "ai"
-import { z } from "zod"
-import { usage } from "@/drizzle/schema"
-import { formSchema } from "./mock-data-form"
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server"
-import { db } from "@/drizzle/db"
 import { eq } from "drizzle-orm"
-import { initialCredits } from "@/constants"
+import { z } from "zod"
+import { auth } from "./auth/auth"
 
-export async function getUserCredits() {
-    const user = await currentUser()
-    if (!user) return null
-    const userUsage = await db.query.usage.findFirst({
-        columns: { credits: true, id: true },
-        where: eq(usage.userId, user.id),
+export async function getLoggedUserCredits() {
+    const session = await auth()
+    if (!session) return null
+    const user = await db.query.users.findFirst({
+        columns: { credits: true },
+        where: eq(users.id, session.user.id),
     })
-    return userUsage?.credits ?? initialCredits
+    if (!user) return null
+    return user.credits
 }
 
 const outputSchema = z.object({
@@ -32,7 +31,6 @@ const outputSchema = z.object({
         })
     ),
 })
-
 
 export async function generateMockData(data: {
     types: {
@@ -49,22 +47,25 @@ export async function generateMockData(data: {
     }[]
 }> {
     try {
-        const { userId } = auth()
-        if (!userId) return { error: "Unauthenticated" }
-        await db.insert(usage).values({ userId }).onConflictDoNothing()
+        const session = await auth()
+        if (!session) return { error: "Unauthenticated" }
+        await db
+            .insert(usage)
+            .values({ userId: session.user.id })
+            .onConflictDoNothing()
 
-        const userUsage = await db.query.usage.findFirst({
+        const user = await db.query.users.findFirst({
             columns: { credits: true, id: true },
-            where: eq(usage.userId, userId),
+            where: eq(users.id, session.user.id),
         })
 
         const creditsUsage = data.types.reduce(
             (acc, curr) => acc + (curr.numberOfMocks === "25" ? 1 : 2),
             0
         )
-        if (!userUsage) return { error: "Error fetching user info" }
+        if (!user) return { error: "Error fetching user info" }
 
-        if (creditsUsage > userUsage.credits)
+        if (creditsUsage > user.credits)
             return { error: "You don't have enough credits" }
 
         const prompt = `You will receive an array of typescript types or interfaces, a number of mocks and optionally a description and 
@@ -82,8 +83,8 @@ export async function generateMockData(data: {
 
         await db
             .update(usage)
-            .set({ credits: userUsage.credits - creditsUsage })
-            .where(eq(usage.id, userUsage.id))
+            .set({ credits: user.credits - creditsUsage })
+            .where(eq(users.id, user.id))
         return { result: object.results }
     } catch (e) {
         return { error: "Internal error" }

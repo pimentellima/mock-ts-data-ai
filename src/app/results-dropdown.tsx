@@ -31,8 +31,10 @@ export function ResultsDropdown({
                 <SelectValue placeholder="Select a result to show" />
             </SelectTrigger>
             <SelectContent>
-                {results.map(({ resultName }) => (
-                    <SelectItem value={resultName}>{resultName}</SelectItem>
+                {results.map(({ resultName }, index) => (
+                    <SelectItem key={resultName + index} value={resultName}>
+                        {resultName}
+                    </SelectItem>
                 ))}
             </SelectContent>
         </Select>

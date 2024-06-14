@@ -9,34 +9,33 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { useClerk } from "@clerk/nextjs"
-import { User } from "@clerk/nextjs/server"
+import { User } from "@/types/next-auth"
 import { useQuery } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
+import { signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
-import { getUserCredits } from "./actions"
+import { getLoggedUserCredits } from "./actions"
 
 export default function UserDialog({
     user,
     userCredits,
 }: {
     user: User
-    userCredits: number
+    userCredits?: number | null
 }) {
     const [open, setOpen] = useState(false)
-    const { signOut } = useClerk()
     const { data: credits } = useQuery({
         initialData: userCredits,
-        queryFn: async () => await getUserCredits(),
-        queryKey: ["user credits", user.id],
+        queryFn: async () => await getLoggedUserCredits(),
+        queryKey: ["credits"],
     })
 
     return (
         <Dialog onOpenChange={(open) => setOpen(open)} open={open}>
             <DialogTrigger>
                 <Avatar>
-                    <AvatarImage src={user?.imageUrl} alt="" />
+                    <AvatarImage src={user?.image || ""} alt="" />
                     <AvatarFallback>
                         <UserIcon />
                     </AvatarFallback>
@@ -49,13 +48,13 @@ export default function UserDialog({
                 <div>
                     <div className="flex items-center gap-2">
                         <Avatar>
-                            <AvatarImage src={user?.imageUrl} alt="" />
+                            <AvatarImage src={user?.image || ""} alt="" />
                             <AvatarFallback>
                                 <UserIcon />
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col text-sm">
-                            <p>{user?.firstName}</p>
+                            <p>{user?.email || user?.name}</p>
                             <p>{`Remaining credits: ${credits}`}</p>
                         </div>
                     </div>
@@ -71,7 +70,9 @@ export default function UserDialog({
                     </Button>
                     <Button
                         variant={"link"}
-                        onClick={() => signOut({ redirectUrl: "/" })}
+                        onClick={() =>
+                            signOut({ callbackUrl: "/sign-in", redirect: true })
+                        }
                     >
                         Sign out
                     </Button>

@@ -7,10 +7,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { auth } from "@clerk/nextjs/server"
 import Link from "next/link"
 import Stripe from "stripe"
 import Checkout from "./checkout"
+import { auth } from "../auth/auth"
 
 const paymentStatusMessage: Record<Stripe.Checkout.Session.Status, string> = {
     complete: "Payment complete",
@@ -30,7 +30,7 @@ export default async function Page({
         canceled?: "true" | "false"
     }
 }) {
-    const { userId } = auth()
+    const session = await auth()
 
     const checkoutSession = searchParams.session_id
         ? await stripe.checkout.sessions.retrieve(searchParams.session_id)
@@ -90,7 +90,7 @@ export default async function Page({
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
-                    {userId ? (
+                    {session ? (
                         <Checkout />
                     ) : (
                         <div>

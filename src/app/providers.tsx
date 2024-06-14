@@ -1,6 +1,6 @@
 "use client"
-import { ClerkProvider } from "@clerk/nextjs"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { SessionProvider } from "next-auth/react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 const queryClient = new QueryClient()
@@ -8,15 +8,15 @@ const queryClient = new QueryClient()
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <QueryClientProvider client={queryClient}>
-            <ClerkProvider>
+            <SessionProvider>
                 <NextThemesProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="dark"
                     disableTransitionOnChange
                 >
                     {children}
                 </NextThemesProvider>
-            </ClerkProvider>
+            </SessionProvider>
         </QueryClientProvider>
     )
 }

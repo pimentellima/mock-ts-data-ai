@@ -1,8 +1,5 @@
 import GithubIcon from "@/components/github-icon"
 import { Toaster } from "@/components/ui/toaster"
-import { UserProfile } from "@clerk/nextjs"
-import { auth, currentUser } from "@clerk/nextjs/server"
-import { ArrowLeft } from "lucide-react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import Link from "next/link"
@@ -10,9 +7,10 @@ import "./globals.css"
 import Providers from "./providers"
 import UserDialog from "./user-dialog"
 import { db } from "@/drizzle/db"
-import { usage } from "@/drizzle/schema"
+import { users } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
 import { Button } from "@/components/ui/button"
+import { auth } from "./auth/auth"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,16 +24,17 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
-    const { userId } = auth()
-    const user = await currentUser()
+    const session = await auth()
+
+    const user = session ? session.user : null
     const userCredits = user
         ? (
-              await db.query.usage.findFirst({
+              await db.query.users.findFirst({
                   columns: { credits: true },
-                  where: eq(usage.userId, user.id),
+                  where: eq(users.id, user.id),
               })
-          )?.credits || 0
-        : 0
+          )?.credits
+        : null
 
     return (
         <html lang="en">
@@ -59,7 +58,7 @@ export default async function RootLayout({
                                         Buy credits
                                     </Link>
                                 </Button>
-                                {userId && user ? (
+                                {user ? (
                                     <UserDialog
                                         user={JSON.parse(JSON.stringify(user))}
                                         userCredits={userCredits}
