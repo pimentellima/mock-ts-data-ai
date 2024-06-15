@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/drizzle/db"
-import { usage, users } from "@/drizzle/schema"
+import { users } from "@/drizzle/schema"
 import { openai } from "@ai-sdk/openai"
 import { generateObject } from "ai"
 import { eq } from "drizzle-orm"
@@ -48,22 +48,19 @@ export async function generateMockData(data: {
 }> {
     try {
         const session = await auth()
-        if (!session) return { error: "Unauthenticated" }
-        await db
-            .insert(usage)
-            .values({ userId: session.user.id })
-            .onConflictDoNothing()
+        if (!session?.user.id) return { error: "Unauthenticated" }
 
         const user = await db.query.users.findFirst({
             columns: { credits: true, id: true },
             where: eq(users.id, session.user.id),
         })
 
+        if (!user) return { error: "Error fetching user information" }
+
         const creditsUsage = data.types.reduce(
-            (acc, curr) => acc + (curr.numberOfMocks === "25" ? 1 : 2),
+            (acc, curr) => acc + (Number(curr.numberOfMocks) / 25),
             0
         )
-        if (!user) return { error: "Error fetching user info" }
 
         if (creditsUsage > user.credits)
             return { error: "You don't have enough credits" }
@@ -82,7 +79,7 @@ export async function generateMockData(data: {
         })
 
         await db
-            .update(usage)
+            .update(users)
             .set({ credits: user.credits - creditsUsage })
             .where(eq(users.id, user.id))
         return { result: object.results }
