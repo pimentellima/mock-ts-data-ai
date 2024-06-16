@@ -1,4 +1,5 @@
 import GithubIcon from "@/components/github-icon"
+import { Analytics } from "@vercel/analytics/react"
 import { Toaster } from "@/components/ui/toaster"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
@@ -75,7 +76,10 @@ export default async function RootLayout({
                                 )}
                             </div>
                         </header>
-                        <div className="mx-4 sm:mx-10 md:mx-40">{children}</div>
+                        <div className="mx-4 sm:mx-10 md:mx-40">
+                            {children}
+                            <Analytics />
+                        </div>
                         <footer
                             className="h-14 mt-10 border-t w-full 
                             flex items-center justify-between px-4 sm:px-10 md:px-40"
