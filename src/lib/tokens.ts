@@ -1,13 +1,18 @@
 import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "@/constants"
+import { db } from "@/drizzle/db"
+import { refreshTokens } from "@/drizzle/schema"
 import {
     createRefreshToken,
     extendRefreshToken,
     getRefreshToken,
 } from "@/drizzle/tokens"
+import { eq } from "drizzle-orm"
 import { JWT } from "next-auth/jwt"
 
 export async function obtainAccessToken(userId: string) {
-    const refreshToken = await getRefreshToken(userId)
+    const refreshToken = await db.query.refreshTokens.findFirst({
+        where: eq(refreshTokens.userId, userId),
+    })
     if (!refreshToken) {
         return await createRefreshToken(userId)
     }

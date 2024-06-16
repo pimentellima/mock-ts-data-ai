@@ -16,23 +16,24 @@ export async function createRefreshToken(userId: string) {
 }
 
 export async function extendRefreshToken(token: string, ttl: number) {
-    return await db
+    const [refreshToken] = await db
         .update(refreshTokens)
         .set({
             expires: new Date(Date.now() + ttl),
         })
         .where(eq(refreshTokens.token, token))
         .returning()
+    return refreshToken
 }
 
 export async function deleteRefreshTokens(userId: string) {
     await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
 }
 
-export async function getRefreshToken(userId: string) {
-    const token = await db.query.refreshTokens.findFirst({
-        where: eq(refreshTokens.userId, userId),
+export async function getRefreshToken(token: string) {
+    const refreshToken = await db.query.refreshTokens.findFirst({
+        where: eq(refreshTokens.token, token),
     })
 
-    return token
+    return refreshToken
 }

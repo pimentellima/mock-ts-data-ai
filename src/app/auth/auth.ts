@@ -32,7 +32,6 @@ export const authOptions = {
             return true
         },
         async jwt({ token, user, account }) {
-            // Initial sign in
             if (user) {
                 token.refreshToken = await obtainAccessToken(
                     token.sub as string
