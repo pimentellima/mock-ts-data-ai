@@ -44,7 +44,7 @@ export default async function RootLayout({
                     <div className="min-h-screen flex flex-col justify-between">
                         <header
                             className="sticky top-0 h-14 py-2 border-b w-full bg-background
-                            flex justify-between items-center px-40 z-10"
+                            flex justify-between items-center px-4 sm:px-10 md:px-40 z-10"
                         >
                             <div className="flex gap-2 items-center">
                                 <Button asChild variant={"link"}>
@@ -75,10 +75,10 @@ export default async function RootLayout({
                                 )}
                             </div>
                         </header>
-                        <div className="mx-40">{children}</div>
+                        <div className="mx-4 sm:mx-10 md:mx-40">{children}</div>
                         <footer
                             className="h-14 mt-10 border-t w-full 
-                            flex items-center justify-between px-40"
+                            flex items-center justify-between px-4 sm:px-10 md:px-40"
                         >
                             <p>
                                 <span className="opacity-85">Created by </span>

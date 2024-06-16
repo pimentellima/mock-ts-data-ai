@@ -10,12 +10,14 @@ export default function Home() {
 
     return (
         <main className="flex flex-col justify-center h-full gap-2">
-            <h1 className="text-2xl text-center tracking-tight font-semibold mt-5">
+            <h1 className="text-xl md:text-2xl text-center tracking-tight font-semibold mt-5">
                 Typescript to Mock Data Generator
             </h1>
-            <div className="grid grid-cols-2 gap-5">
-                <MockDataForm setResultJson={setResultJson} />
-                <div className="mt-8">
+            <div className="flex flex-col gap-10 md:grid md:grid-cols-2 md:gap-5">
+                <div className="mt-3 md:mt-0">
+                    <MockDataForm setResultJson={setResultJson} />
+                </div>
+                <div className="md:mt-8">
                     {!!resultJson ? (
                         <ResultsList resultJson={resultJson} />
                     ) : (
