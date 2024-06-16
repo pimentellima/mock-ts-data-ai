@@ -92,8 +92,8 @@ export default function CheckoutForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                Select the number of credits to buy (1 credit =
-                                25 itens generated)
+                                Select the number of credits to buy (Usage: 25
+                                itens generated per 1 credit)
                             </FormLabel>
                             <FormControl>
                                 <Select

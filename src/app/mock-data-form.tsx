@@ -30,72 +30,21 @@ import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { generateMockData } from "./actions"
 
-function extractTypesAndInterfaces(tsCode: string) {
-    const typePattern = /type\s+(\w+)\s*=\s*([^;]*);?/g
-    const interfacePattern = /interface\s+(\w+)\s*{[^}]*}/g
-
-    let types = []
-    let interfaces = []
-
-    let match
-
-    // Extract types
-    while ((match = typePattern.exec(tsCode)) !== null) {
-        types.push({ name: match[1], type: match[2].trim() })
-    }
-
-    // Extract interfaces
-    while ((match = interfacePattern.exec(tsCode)) !== null) {
-        interfaces.push({ name: match[1], type: match[0].trim() })
-    }
-
-    // Combine both lists and return
-    return types.concat(interfaces)
-}
-
 export const formSchema = z.object({
-    typescriptCode: z
-        .string()
-        .max(1000, {
-            message: "Your typescript code exceeds the character limit.",
-        })
-        .superRefine((val, ctx) => {
-            const types = extractTypesAndInterfaces(val).map(({ name }) => name)
-            const duplicates = types.filter(
-                (item, index) => types.indexOf(item) !== index
-            )
-            if (duplicates.length !== 0) {
-                return ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "You have duplicate types/interfaces.",
-                })
-            }
-        }),
+    typeDefinition: z.string().max(3000, {
+        message: "Your type definition code exceeds the character limit.",
+    }),
     description: z
         .string()
         .max(300, { message: "Your description exceeds the character limit." })
         .optional(),
-    types: z.array(
-        z.object({
-            name: z.string(),
-            typeDefinition: z.string(),
-            numberOfMocks: z.string(),
-        })
-    ),
+    numberOfMocks: z.string(),
 })
 
 export default function MockDataForm({
-    setResult,
+    setResultJson,
 }: {
-    setResult: Dispatch<
-        SetStateAction<
-            | {
-                  resultName: string
-                  json: string
-              }[]
-            | null
-        >
-    >
+    setResultJson: Dispatch<SetStateAction<string | null>>
 }) {
     const queryClient = useQueryClient()
     const { data: sessionData } = useSession()
@@ -105,29 +54,11 @@ export default function MockDataForm({
         resolver: zodResolver(formSchema),
         mode: "onChange",
         defaultValues: {
-            typescriptCode:
-                "interface User {\n  id: number\n  name: string\n  }\n\ninterface Friend {\n  userId: number\n  friendId: number\n}",
-            description: "",
-            types: [
-                {
-                    name: "User",
-                    typeDefinition:
-                        "interface User {\n  id: number\n  name: string\n }",
-                    numberOfMocks: "25",
-                },
-                {
-                    name: "Friend",
-                    typeDefinition:
-                        "interface Friend {\n  userId: number\n  friendId: number\n}",
-                    numberOfMocks: "25",
-                },
-            ],
+            typeDefinition:
+                "interface User {\n  id: number\n  name: string\n  country: string\n  city: string\n  hobbies: string[]\n}",
+            description: "All users are from Brazil.",
+            numberOfMocks: "25",
         },
-    })
-
-    const { fields: types } = useFieldArray({
-        control: form.control,
-        name: "types",
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -146,9 +77,13 @@ export default function MockDataForm({
                 })
                 return
             }
-            setResult(null)
-            const { types, description } = values
-            const response = await generateMockData({ types, description })
+            setResultJson(null)
+            const { numberOfMocks, typeDefinition, description } = values
+            const response = await generateMockData({
+                numberOfMocks,
+                typeDefinition,
+                description,
+            })
             if (response.error) {
                 toast({
                     title: "An error occurred",
@@ -157,8 +92,8 @@ export default function MockDataForm({
                 })
                 return
             }
-            if (response.result) {
-                setResult(response.result)
+            if (response.resultJson) {
+                setResultJson(response.resultJson)
                 queryClient.refetchQueries({
                     queryKey: ["credits"],
                 })
@@ -176,28 +111,17 @@ export default function MockDataForm({
         <Form {...form}>
             <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
-                    name="typescriptCode"
+                    name="typeDefinition"
                     control={form.control}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Types/interfaces</FormLabel>
+                            <FormLabel>Type definition</FormLabel>
                             <FormControl>
                                 <CodeEditor
                                     value={field.value}
                                     language="ts"
                                     onChange={(evn) => {
                                         field.onChange(evn.target.value)
-                                        const types = extractTypesAndInterfaces(
-                                            evn.target.value
-                                        )
-                                        form.setValue(
-                                            "types",
-                                            types.map(({ name, type }) => ({
-                                                name,
-                                                typeDefinition: type,
-                                                numberOfMocks: "25",
-                                            }))
-                                        )
                                     }}
                                     padding={15}
                                     className="border rounded-sm bg-inherit"
@@ -207,13 +131,13 @@ export default function MockDataForm({
                                 />
                             </FormControl>
                             <FormDescription>
-                                The TypeScript types or interfaces for which you
+                                The typescript type or interface for which you
                                 want to generate data.
                             </FormDescription>
-                            {!!form.formState.errors.typescriptCode && (
+                            {!!form.formState.errors.typeDefinition && (
                                 <FormMessage>
                                     {
-                                        form.formState.errors.typescriptCode
+                                        form.formState.errors.typeDefinition
                                             .message
                                     }
                                 </FormMessage>
@@ -249,49 +173,40 @@ export default function MockDataForm({
                     )}
                 />
                 <div>
-                    {!!types && (
-                        <div className="grid grid-cols-2 gap-2">
-                            {types.map((arrayField, index) => (
-                                <FormField
-                                    key={arrayField.id}
-                                    name={`types.${index}.numberOfMocks`}
-                                    control={form.control}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                Number of mocks for{" "}
-                                                {arrayField.name}
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Select
-                                                    value={field.value}
-                                                    onValueChange={(value) =>
-                                                        field.onChange(value)
-                                                    }
-                                                >
-                                                    <SelectTrigger className="w-[180px]">
-                                                        <SelectValue
-                                                            placeholder={`Click here`}
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="25">
-                                                            25
-                                                        </SelectItem>
-                                                        <SelectItem value="50">
-                                                            50
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <FormField
+                        name="numberOfMocks"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Number of mocks</FormLabel>
+                                <FormControl>
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={(value) =>
+                                            field.onChange(value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-[180px]">
+                                            <SelectValue
+                                                placeholder={`Click here`}
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="5">5</SelectItem>
+                                            <SelectItem value="25">
+                                                25
+                                            </SelectItem>
+                                            <SelectItem value="50">
+                                                50
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
                     <FormDescription className="mt-1">
-                        The number of mock data entries you want to generate.
+                        The number of items you want to generate.
                     </FormDescription>
                 </div>
                 <Button

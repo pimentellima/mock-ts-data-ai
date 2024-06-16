@@ -3,10 +3,11 @@
 import { db } from "@/drizzle/db"
 import { users } from "@/drizzle/schema"
 import { openai } from "@ai-sdk/openai"
-import { generateObject } from "ai"
+import { generateObject, generateText } from "ai"
 import { eq } from "drizzle-orm"
-import { z } from "zod"
+import { number, z } from "zod"
 import { auth } from "./auth/auth"
+import { isArray } from "util"
 
 export async function getLoggedUserCredits() {
     const session = await auth()
@@ -22,30 +23,27 @@ export async function getLoggedUserCredits() {
 const outputSchema = z.object({
     results: z.array(
         z.object({
-            resultName: z.string(),
+            resultName: z
+                .string()
+                .describe("It should match the name of the type entry"),
             json: z
                 .string()
                 .describe(
-                    "The result of the mock data generation in JSON format. It should have the format specified in the typeDefinition and the length of the specified numberOfMocks for the resultName"
+                    "The result of the generated data. It should be an array in the json format."
                 ),
         })
     ),
 })
 
-export async function generateMockData(data: {
-    types: {
-        name: string
-        typeDefinition: string
-        numberOfMocks: string
-    }[]
+export async function generateMockData({
+    numberOfMocks,
+    typeDefinition,
+    description,
+}: {
+    typeDefinition: string
+    numberOfMocks: string
     description?: string
-}): Promise<{
-    error?: string
-    result?: {
-        resultName: string
-        json: string
-    }[]
-}> {
+}) {
     try {
         const session = await auth()
         if (!session?.user.id) return { error: "Unauthenticated" }
@@ -57,32 +55,31 @@ export async function generateMockData(data: {
 
         if (!user) return { error: "Error fetching user information" }
 
-        const creditsUsage = data.types.reduce(
-            (acc, curr) => acc + (Number(curr.numberOfMocks) / 25),
-            0
-        )
+        const creditsUsage = Number(numberOfMocks) / 25
 
         if (creditsUsage > user.credits)
             return { error: "You don't have enough credits" }
 
-        const prompt = `You will receive an array of typescript types or interfaces, a number of mocks and optionally a description and 
-            will generate mock data based on those types. The output should format be an array of object with the resultName and the generated json.
-            The output should look contain real world-like data.
-            
-            Input: ${JSON.stringify(data.types)} 
-            ${`Description: ${data.description || "no description"}`}`
+        const prompt = `Type/interface: ${typeDefinition}; Number of itens to generate: ${numberOfMocks}; Description: ${
+            description || "no description"
+        }`
 
-        const { object, usage: tokenUsage } = await generateObject({
+        const { text, usage: tokenUsage } = await generateText({
             model: openai("gpt-3.5-turbo"),
-            schema: outputSchema,
+            system: "You are a bot that generates data that looks like real world data in json format based on a typescript type/interface. The data you generate should match the first type in Type/interface.",
             prompt,
         })
+        try {
+            JSON.parse(text)
+        } catch {
+            return { error: "Error generating data. No credits were used." }
+        }
 
         await db
             .update(users)
             .set({ credits: user.credits - creditsUsage })
             .where(eq(users.id, user.id))
-        return { result: object.results }
+        return { resultJson: text }
     } catch (e) {
         return { error: "Internal error" }
     }
