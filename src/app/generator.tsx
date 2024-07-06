@@ -1,0 +1,52 @@
+"use client"
+import { useState } from "react"
+import MockDataForm from "./mock-data-form"
+import CopyButton from "./copy-button"
+
+export default function Generator() {
+    const [resultJson, setResultJson] = useState<string | null>(
+        '[{"id":1,"name":"Alice","country":"Brazil","city":"SaoPaulo","hobbies":["Reading","Cooking"]},{"id":2,"name":"Bob","country":"Brazil","city":"RiodeJaneiro","hobbies":["Hiking","Photography"]},{"id":3,"name":"Charlie","country":"Brazil","city":"SaoPaulo","hobbies":["Painting","Gardening"]},{"id":4,"name":"David","country":"Brazil","city":"Brasilia","hobbies":["Dancing","Swimming"]},{"id":5,"name":"Eve","country":"Brazil","city":"Salvador","hobbies":["Traveling","Yoga"]},{"id":6,"name":"Frank","country":"Brazil","city":"RiodeJaneiro","hobbies":["Cooking","Playingguitar"]},{"id":7,"name":"Grace","country":"Brazil","city":"SaoPaulo","hobbies":["Reading","Painting"]},{"id":8,"name":"Henry","country":"Brazil","city":"Brasilia","hobbies":["Hiking","Photography"]},{"id":9,"name":"Ivy","country":"Brazil","city":"Salvador","hobbies":["Gardening","Swimming"]},{"id":10,"name":"Jack","country":"Brazil","city":"RiodeJaneiro","hobbies":["Dancing","Yoga"]},{"id":11,"name":"Kate","country":"Brazil","city":"SaoPaulo","hobbies":["Traveling","Playingguitar"]},{"id":12,"name":"Liam","country":"Brazil","city":"Brasilia","hobbies":["Cooking","Painting"]},{"id":13,"name":"Mia","country":"Brazil","city":"Salvador","hobbies":["Reading","Photography"]},{"id":14,"name":"Noah","country":"Brazil","city":"RiodeJaneiro","hobbies":["Hiking","Swimming"]},{"id":15,"name":"Olivia","country":"Brazil","city":"SaoPaulo","hobbies":["Gardening","Yoga"]},{"id":16,"name":"Peter","country":"Brazil","city":"Brasilia","hobbies":["Dancing","Playingguitar"]},{"id":17,"name":"Quinn","country":"Brazil","city":"Salvador","hobbies":["Traveling","Painting"]},{"id":18,"name":"Ryan","country":"Brazil","city":"RiodeJaneiro","hobbies":["Cooking","Photography"]},{"id":19,"name":"Sophia","country":"Brazil","city":"SaoPaulo","hobbies":["Hiking","Swimming"]},{"id":20,"name":"Thomas","country":"Brazil","city":"Brasilia","hobbies":["Gardening","Yoga"]},{"id":21,"name":"Uma","country":"Brazil","city":"Salvador","hobbies":["Dancing","Playingguitar"]},{"id":22,"name":"Vincent","country":"Brazil","city":"RiodeJaneiro","hobbies":["Traveling","Painting"]},{"id":23,"name":"Wendy","country":"Brazil","city":"SaoPaulo","hobbies":["Cooking","Photography"]},{"id":24,"name":"Xavier","country":"Brazil","city":"Brasilia","hobbies":["Reading","Swimming"]},{"id":25,"name":"Yara","country":"Brazil","city":"Salvador","hobbies":["Hiking","Yoga"]}]'
+    )
+
+    return (
+        <div className="flex flex-col gap-10 md:grid md:grid-cols-2 md:gap-5">
+            <div className="mt-3 md:mt-0">
+                <MockDataForm setResultJson={setResultJson} />
+            </div>
+            <div className="md:mt-8">
+                {!!resultJson ? (
+                    <div
+                        className="border px-3 py-3 
+                             rounded-md flex flex-col"
+                    >
+                        <div className="text-muted-foreground flex justify-end text-sm pb-3">
+                            <CopyButton textToCopy={resultJson} />
+                        </div>
+                        <div>
+                            <div className="h-[500px] overflow-y-auto">
+                                <div>
+                                    <pre>
+                                        {JSON.stringify(
+                                            JSON.parse(resultJson),
+                                            null,
+                                            2
+                                        )}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <p
+                            className="border px-3 py-3
+                        rounded-md text-sm text-muted-foreground"
+                        >
+                            The results will show here
+                        </p>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
