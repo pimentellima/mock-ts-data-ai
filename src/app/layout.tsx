@@ -12,6 +12,7 @@ import { users } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
 import { Button } from "@/components/ui/button"
 import { auth } from "./auth/auth"
+import ToggleTheme from "./toggle-theme"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -53,6 +54,7 @@ export default async function RootLayout({
                                 </Button>
                             </div>
                             <div className="flex gap-4 items-center">
+                                <ToggleTheme />
                                 <Button asChild variant={"link"}>
                                     <Link href="/buy-credits">
                                         {" "}

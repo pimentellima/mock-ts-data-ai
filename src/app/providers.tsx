@@ -10,9 +10,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
             <SessionProvider>
                 <NextThemesProvider
+                    enableSystem={false}
                     attribute="class"
-                    defaultTheme="system"
-                    disableTransitionOnChange
+                    defaultTheme="dark"
                 >
                     {children}
                 </NextThemesProvider>
