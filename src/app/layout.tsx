@@ -48,12 +48,10 @@ export default async function RootLayout({
                             className="sticky top-0 h-14 py-2 border-b w-full bg-background
                             flex justify-between items-center px-4 sm:px-10 md:px-40 z-10"
                         >
-                            <div className="flex gap-2 items-center">
-                                <Button asChild variant={"link"}>
-                                    <Link href="/">Generate</Link>
-                                </Button>
-                            </div>
-                            <div className="flex gap-4 items-center">
+                            <Button asChild variant={"link"}>
+                                <Link href="/">Generate</Link>
+                            </Button>
+                            <div className="flex items-center">
                                 <ToggleTheme />
                                 <Button asChild variant={"link"}>
                                     <Link href="/buy-credits">
