@@ -10,7 +10,6 @@ import {
 import Link from "next/link"
 import Stripe from "stripe"
 import Checkout from "./checkout"
-import { auth } from "../auth/auth"
 
 const paymentStatusMessage: Record<Stripe.Checkout.Session.Status, string> = {
     complete: "Payment complete",
@@ -30,8 +29,6 @@ export default async function Page({
         canceled?: "true" | "false"
     }
 }) {
-    const session = await auth()
-
     const checkoutSession = searchParams.session_id
         ? await stripe.checkout.sessions.retrieve(searchParams.session_id)
         : null
@@ -90,18 +87,7 @@ export default async function Page({
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
-                    {session ? (
-                        <Checkout />
-                    ) : (
-                        <div>
-                            <p>You need to sign in to buy credits.</p>
-                            <div className="flex mt-2 justify-end">
-                                <Button asChild>
-                                    <Link href={"sign-in"}>Sign in</Link>
-                                </Button>
-                            </div>
-                        </div>
-                    )}
+                    <Checkout />
                 </CardContent>
             </Card>
         </div>

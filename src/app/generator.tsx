@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react"
 import Result from "@/components/result"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,27 +10,21 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
+import { defaultResultJson } from "@/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import CodeEditor from "@uiw/react-textarea-code-editor"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { generateMockData } from "./actions"
-import { defaultResultJson } from "@/constants"
-import { Input } from "@/components/ui/input"
+import Link from "next/link"
 
 export default function Generator() {
     const [result, setResult] = useState<{
@@ -110,12 +103,9 @@ function MockDataForm({
                 toast({
                     title: "You have to be signed in to generate data",
                     action: (
-                        <ToastAction
-                            onClick={() => router.push("sign-in")}
-                            altText="Sign in"
-                        >
-                            Sign in
-                        </ToastAction>
+                        <Button asChild variant={"link"}>
+                            <Link href={"sign-in"}>Sign in</Link>
+                        </Button>
                     ),
                 })
                 return

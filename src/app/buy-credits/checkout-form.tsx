@@ -19,6 +19,8 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ExternalLink } from "lucide-react"
+import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -36,6 +38,7 @@ export default function CheckoutForm() {
     const elements = useElements()
     const router = useRouter()
     const { toast } = useToast()
+    const session = useSession()
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -44,6 +47,17 @@ export default function CheckoutForm() {
     })
 
     const onSubmit = async () => {
+        if (!session?.data?.user) {
+            toast({
+                title: "You have to be signed in to purchase credits",
+                action: (
+                    <Button asChild variant={"link"}>
+                        <Link href={"sign-in"}>Sign in</Link>
+                    </Button>
+                ),
+            })
+            return
+        }
         const credits = form.getValues("credits")
 
         if (elements == null || stripe == null) {
