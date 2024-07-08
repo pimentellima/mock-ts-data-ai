@@ -11,23 +11,26 @@ export default function Home() {
             </h1>
             <Generator />
             <Separator className="my-10" />
-            <section className="text-center tracking-tight" id="overview">
-                <h2 className="text-xl md:text-2xl font-semibold">Overview</h2>{" "}
-                <p className="text-sm md:text-base text-muted-foreground font-medium">
+            <section id="overview">
+                <h2 className="mb-2 text-xl font-semibold">Overview</h2>{" "}
+                <p className="text-muted-foreground font-medium">
                     Mock TS Data AI generates realistic data based on a
-                    Typescript Interface, using AI technology.
+                    Typescript Interface, using AI technology. Whether you need
+                    test data or prototype data, our app provides you with
+                    high-quality, believable data to meet your development
+                    needs.
                 </p>
-                <h2 className="text-xl md:text-2xl font-semibold mt-6">
+                <h2 className="mb-2 text-xl font-semibold mt-8">
                     How it works
                 </h2>
-                <p className="text-sm md:text-base text-muted-foreground font-medium">
-                    Simply copy and paste your TypeScript interface, and our app
-                    will generate AI-powered data for you.
+                <p className=" text-muted-foreground font-medium">
+                    Just copy and paste your TypeScript interface into our app,
+                    and let AI generate the data for you. This ensures that your
+                    data looks real and is suitable for various testing and
+                    development purposes.
                 </p>
-                <h2 className="text-xl md:text-2xl font-semibold mt-6">
-                    Pricing
-                </h2>
-                <p className="text-sm md:text-base text-muted-foreground font-medium">
+                <h2 className="mb-2 text-xl font-semibold mt-8">Pricing</h2>
+                <p className=" text-muted-foreground font-medium">
                     You can see the pricing in{" "}
                     <Link
                         className="underline underline-offset-4"
@@ -35,8 +38,10 @@ export default function Home() {
                     >
                         buy credits page
                     </Link>
-                    . Every new account gets 5 credits for free. 1 credit is
-                    used for each 25 rows of data generated.
+                    . Each new account comes with 5 free credits, allowing you
+                    to experience our service without any initial cost. For
+                    every 25 rows of data generated, 1 credit is used, making it
+                    easy to manage and scale your data generation needs.
                 </p>
             </section>
         </main>
