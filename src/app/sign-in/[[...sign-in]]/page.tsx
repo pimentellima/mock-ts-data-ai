@@ -2,7 +2,13 @@ import SignInForm from "./sign-in-form"
 import { redirect } from "next/navigation"
 import { auth } from "@/app/auth/auth"
 
-export default async function Page() {
+export default async function Page({
+    searchParams,
+}: {
+    searchParams: {
+        redirectPathname?: string
+    }
+}) {
     const session = await auth()
 
     if (session?.user) {
@@ -11,7 +17,7 @@ export default async function Page() {
 
     return (
         <div className="flex justify-center ">
-            <SignInForm />
+            <SignInForm redirectPathname={searchParams?.redirectPathname} />
         </div>
     )
 }

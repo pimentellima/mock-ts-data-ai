@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ExternalLink } from "lucide-react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { createCheckoutSession } from "./actions"
@@ -39,6 +39,7 @@ export default function CheckoutForm() {
     const router = useRouter()
     const { toast } = useToast()
     const session = useSession()
+    const pathname = usePathname()
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -52,7 +53,9 @@ export default function CheckoutForm() {
                 title: "You have to be signed in to purchase credits",
                 action: (
                     <Button asChild variant={"link"}>
-                        <Link href={"sign-in"}>Sign in</Link>
+                        <Link href={"sign-in/?redirectPathname=" + pathname}>
+                            Sign in
+                        </Link>
                     </Button>
                 ),
             })

@@ -25,7 +25,11 @@ import * as z from "zod"
 import { signInFormSchema } from "../schema"
 import Link from "next/link"
 
-export default function SignInForm() {
+export default function SignInForm({
+    redirectPathname,
+}: {
+    redirectPathname?: string
+}) {
     const { toast } = useToast()
     const router = useRouter()
     const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -50,7 +54,7 @@ export default function SignInForm() {
             return
         }
 
-        router.push("/")
+        router.push(redirectPathname || "/")
         router.refresh()
     }
 
@@ -65,13 +69,47 @@ export default function SignInForm() {
                         <div className="space-x-2">
                             <Button
                                 type="button"
-                                onClick={() => signIn("google")}
+                                onClick={async () => {
+                                    const result = await signIn("google", {
+                                        redirect: true,
+                                        callbackUrl:
+                                            "http://localhost:3000" +
+                                            redirectPathname,
+                                    })
+                                    if (result?.ok) {
+                                        router.push(redirectPathname || "/")
+                                    }
+                                    if (result?.error) {
+                                        toast({
+                                            title: "Error signing in",
+                                            description: result?.error,
+                                            variant: "destructive",
+                                        })
+                                    }
+                                }}
                             >
                                 Sign in with Google
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() => signIn("github")}
+                                onClick={async () => {
+                                    const result = await signIn("github", {
+                                        redirect: true,
+                                        callbackUrl:
+                                            "http://localhost:3000" +
+                                            redirectPathname,
+                                    })
+                                    if (result?.ok) {
+                                        router.push(redirectPathname || "/")
+                                    }
+                                    if (result?.error) {
+                                        toast({
+                                            title: "Error signing in",
+                                            description: result?.error,
+                                            variant: "destructive",
+                                        })
+                                    }
+                                }}
                             >
                                 Sign in with Github
                             </Button>
