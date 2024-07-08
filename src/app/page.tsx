@@ -4,7 +4,7 @@ import Generator from "./generator"
 
 export default function Home() {
     return (
-        <main className="flex flex-col justify-center h-full gap-2">
+        <main className="flex flex-col justify-center gap-2">
             <h1 className="text-xl md:text-2xl text-center tracking-tight font-semibold mt-5">
                 Typescript to Mock Data
                 <br className="sm:hidden" /> Generator

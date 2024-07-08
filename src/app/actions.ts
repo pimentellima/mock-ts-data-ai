@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/drizzle/db"
-import { users } from "@/drizzle/schema"
+import { results, users } from "@/drizzle/schema"
 import { openai } from "@ai-sdk/openai"
 import { generateObject, generateText } from "ai"
 import { eq } from "drizzle-orm"
@@ -43,7 +43,10 @@ export async function generateMockData({
     typeDefinition: string
     numberOfMocks: string
     description?: string
-}) {
+}): Promise<
+    | { jsonString?: never; resultId?: never; error: string }
+    | { jsonString: string; resultId: string; error?: never }
+> {
     try {
         const session = await auth()
         if (!session?.user.id) return { error: "Unauthenticated" }
@@ -75,11 +78,19 @@ export async function generateMockData({
             return { error: "Error generating data. No credits were used." }
         }
 
+        const [insertedResult] = await db
+            .insert(results)
+            .values({ json: text, userId: user.id })
+            .returning()
+
         await db
             .update(users)
             .set({ credits: user.credits - creditsUsage })
             .where(eq(users.id, user.id))
-        return { resultJson: text }
+        return {
+            jsonString: text,
+            resultId: insertedResult.id,
+        }
     } catch (e) {
         return { error: "Internal error" }
     }

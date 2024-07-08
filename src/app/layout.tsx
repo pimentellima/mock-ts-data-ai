@@ -46,11 +46,12 @@ export default async function RootLayout({
                     <div className="min-h-screen flex flex-col justify-between">
                         <header
                             className="sticky top-0 h-14 py-2 border-b w-full bg-background
-                            flex justify-between items-center px-4 sm:px-10 md:px-40 z-10"
+                            flex justify-between px-4 sm:px-10 md:px-40 z-10"
                         >
                             <Button asChild variant={"link"}>
                                 <Link href="/">Generate</Link>
                             </Button>
+
                             <div className="flex items-center">
                                 <ToggleTheme />
                                 <Button asChild variant={"link"}>
@@ -60,10 +61,17 @@ export default async function RootLayout({
                                     </Link>
                                 </Button>
                                 {user ? (
-                                    <UserDialog
-                                        user={JSON.parse(JSON.stringify(user))}
-                                        userCredits={userCredits}
-                                    />
+                                    <>
+                                        <Button asChild variant={"link"}>
+                                            <Link href="/results">Results</Link>
+                                        </Button>
+                                        <UserDialog
+                                            user={JSON.parse(
+                                                JSON.stringify(user)
+                                            )}
+                                            userCredits={userCredits}
+                                        />
+                                    </>
                                 ) : (
                                     <>
                                         <Button asChild variant={"link"}>

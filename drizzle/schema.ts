@@ -2,11 +2,10 @@ import { initialCredits } from "@/constants"
 import { InferInsertModel, sql } from "drizzle-orm"
 import {
     pgTable,
-    primaryKey,
     real,
     text,
     timestamp,
-    uniqueIndex,
+    uniqueIndex
 } from "drizzle-orm/pg-core"
 
 export const users = pgTable(
@@ -25,24 +24,27 @@ export const users = pgTable(
     }
 )
 
-export const refreshTokens = pgTable(
-    "refreshTokens",
-    {
-        token: text("token")
-            .notNull()
-            .default(sql`gen_random_uuid()`)
-            .primaryKey(),
-        userId: text("userId")
-            .references(() => users.id, { onDelete: "cascade" })
-            .notNull(),
-        expires: timestamp("expires", { mode: "date" }).notNull(),
-    },
-    (table) => {
-        return {
-            compoundKey: primaryKey({ columns: [table.token, table.userId] }),
-        }
-    }
-)
+export const results = pgTable("results", {
+    id: text("id")
+        .default(sql`gen_random_uuid()`)
+        .primaryKey(),
+    json: text("json").notNull(),
+    userId: text("userId")
+        .references(() => users.id, { onDelete: "cascade" })
+        .notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
+})
+
+export const refreshTokens = pgTable("refreshTokens", {
+    token: text("token")
+        .notNull()
+        .default(sql`gen_random_uuid()`)
+        .primaryKey(),
+    userId: text("userId")
+        .references(() => users.id, { onDelete: "cascade" })
+        .notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+})
 
 export type NewUser = InferInsertModel<typeof users>
 export type NewSession = InferInsertModel<typeof refreshTokens>
