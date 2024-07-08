@@ -11,26 +11,26 @@ export default function Home() {
             </h1>
             <Generator />
             <Separator className="my-10" />
-            <section id="overview">
-                <h2 className="mb-2 text-xl font-semibold">Overview</h2>{" "}
-                <p className="text-muted-foreground font-medium">
+            <section>
+                <h2 className="mb-1 text-xl font-semibold">Overview</h2>{" "}
+                <p className="text-sm text-muted-foreground font-medium">
                     Mock TS Data AI generates realistic data based on a
                     Typescript Interface, using AI technology. Whether you need
                     test data or prototype data, our app provides you with
                     high-quality, believable data to meet your development
                     needs.
                 </p>
-                <h2 className="mb-2 text-xl font-semibold mt-8">
+                <h2 className="mb-1 text-xl font-semibold mt-6">
                     How it works
                 </h2>
-                <p className=" text-muted-foreground font-medium">
+                <p className=" text-sm text-muted-foreground font-medium">
                     Just copy and paste your TypeScript interface into our app,
                     and let AI generate the data for you. This ensures that your
                     data looks real and is suitable for various testing and
                     development purposes.
                 </p>
-                <h2 className="mb-2 text-xl font-semibold mt-8">Pricing</h2>
-                <p className=" text-muted-foreground font-medium">
+                <h2 className="mb-1 text-xl font-semibold mt-6">Pricing</h2>
+                <p className=" text-sm text-muted-foreground font-medium">
                     You can see the pricing in{" "}
                     <Link
                         className="underline underline-offset-4"
