@@ -4,8 +4,7 @@ import { db } from "@/drizzle/db"
 import { desc, eq } from "drizzle-orm"
 import { results } from "@/drizzle/schema"
 import ResultsInfiniteQuery from "./results-inifinite-query"
-
-export const ITEMS_PER_PAGE = 5
+import { ITEMS_PER_PAGE } from "@/constants"
 
 export default async function Page() {
     const session = await auth()

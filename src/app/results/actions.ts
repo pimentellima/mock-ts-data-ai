@@ -4,7 +4,7 @@ import { results } from "@/drizzle/schema"
 import { desc, eq, InferSelectModel } from "drizzle-orm"
 import { auth } from "../auth/auth"
 import { db } from "@/drizzle/db"
-import { ITEMS_PER_PAGE } from "./page"
+import { ITEMS_PER_PAGE } from "@/constants"
 
 export async function getResults(pageParam: number) {
     const session = await auth()
