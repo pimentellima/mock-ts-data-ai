@@ -71,10 +71,7 @@ export default function SignInForm({
                                 type="button"
                                 onClick={async () => {
                                     const result = await signIn("google", {
-                                        redirect: true,
-                                        callbackUrl:
-                                            "http://localhost:3000" +
-                                            redirectPathname,
+                                        redirect: false,
                                     })
                                     if (result?.ok) {
                                         router.push(redirectPathname || "/")
@@ -94,10 +91,7 @@ export default function SignInForm({
                                 type="button"
                                 onClick={async () => {
                                     const result = await signIn("github", {
-                                        redirect: true,
-                                        callbackUrl:
-                                            "http://localhost:3000" +
-                                            redirectPathname,
+                                        redirect: false,
                                     })
                                     if (result?.ok) {
                                         router.push(redirectPathname || "/")
