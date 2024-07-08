@@ -17,8 +17,9 @@ import ToggleTheme from "./toggle-theme"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: "TS Mock Data AI",
-    description: "Generate real data for your typescript projects using AI.",
+    title: "Typescript Mock Data AI",
+    description:
+        "Generate mock/fake/test data for your typescript projects using AI.",
 }
 
 export default async function RootLayout({
