@@ -41,7 +41,7 @@ export async function generateMockData({
     description,
 }: {
     typeDefinition: string
-    numberOfMocks: string
+    numberOfMocks: number
     description?: string
 }): Promise<
     | { jsonString?: never; resultId?: never; error: string }
@@ -58,7 +58,7 @@ export async function generateMockData({
 
         if (!user) return { error: "Error fetching user information" }
 
-        const creditsUsage = Number(numberOfMocks) / 25
+        const creditsUsage = numberOfMocks / 25
 
         if (creditsUsage > user.credits)
             return { error: "You don't have enough credits" }

@@ -31,6 +31,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { generateMockData } from "./actions"
 import { defaultResultJson } from "@/constants"
+import { Input } from "@/components/ui/input"
 
 export default function Generator() {
     const [result, setResult] = useState<{
@@ -38,8 +39,7 @@ export default function Generator() {
         resultId: string
     } | null>({
         resultId: "default",
-        jsonString:
-            defaultResultJson
+        jsonString: defaultResultJson,
     })
 
     return (
@@ -73,7 +73,10 @@ const mockFormSchema = z.object({
         .string()
         .max(300, { message: "Your description exceeds the character limit." })
         .optional(),
-    numberOfMocks: z.string(),
+    numberOfMocks: z.coerce
+        .number()
+        .min(1, { message: "Number of mocks must be at least 1." })
+        .max(50, { message: "Number of mocks must be at most 50." }),
 })
 
 function MockDataForm({
@@ -97,7 +100,7 @@ function MockDataForm({
             typeDefinition:
                 "interface User {\n  id: number\n  name: string\n  country: string\n  city: string\n  hobbies: string[]\n}",
             description: "All users are from Brazil.",
-            numberOfMocks: "25",
+            numberOfMocks: 25,
         },
     })
 
@@ -226,34 +229,28 @@ function MockDataForm({
                             <FormItem>
                                 <FormLabel>Number of mocks</FormLabel>
                                 <FormControl>
-                                    <Select
+                                    <Input
                                         value={field.value}
-                                        onValueChange={(value) =>
-                                            field.onChange(value)
+                                        onChange={(e) =>
+                                            field.onChange(e.target.value)
                                         }
-                                    >
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue
-                                                placeholder={`Click here`}
-                                            />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="5">5</SelectItem>
-                                            <SelectItem value="25">
-                                                25
-                                            </SelectItem>
-                                            <SelectItem value="50">
-                                                50
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        type="number"
+                                    />
                                 </FormControl>
+                                <FormDescription className="mt-1">
+                                    The number of items you want to generate.
+                                </FormDescription>
+                                {!!form.formState.errors.numberOfMocks && (
+                                    <FormMessage>
+                                        {
+                                            form.formState.errors.numberOfMocks
+                                                .message
+                                        }
+                                    </FormMessage>
+                                )}
                             </FormItem>
                         )}
                     />
-                    <FormDescription className="mt-1">
-                        The number of items you want to generate.
-                    </FormDescription>
                 </div>
                 <Button
                     disabled={form.formState.isSubmitting}

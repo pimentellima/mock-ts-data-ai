@@ -48,7 +48,7 @@ export default function Result({
                 </div>
             </div>
             <div>
-                <div className="h-[500px] overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto">
                     <div>
                         <pre>{JSON.stringify(JSON.parse(json), null, 2)}</pre>
                     </div>
