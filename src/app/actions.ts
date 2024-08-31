@@ -68,7 +68,7 @@ export async function generateMockData({
         }`
 
         const { text, usage: tokenUsage } = await generateText({
-            model: openai("gpt-4"),
+            model: openai("gpt-3.5-turbo"),
             system: "You are a bot that generates data that looks like real world data in json format based on a typescript type/interface. The data you generate should match the first type in Type/interface.",
             prompt,
         })
