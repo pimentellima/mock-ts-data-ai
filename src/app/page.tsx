@@ -1,15 +1,22 @@
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import Generator from "./generator"
+import DataGenerator from "../components/data-generator"
 
 export default function Home() {
     return (
-        <main className="flex flex-col justify-center gap-2">
-            <h1 className="text-xl md:text-2xl text-center tracking-tight font-semibold mt-5">
-                Typescript to Mock Data
-                <br className="sm:hidden" /> Generator
-            </h1>
-            <Generator />
+        <div className="container mx-auto py-6 px-4 md:px-6">
+            <header className="mb-8">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    AI Prototype Data Generator
+                </h1>
+                <p className="text-muted-foreground mt-2">
+                    Generate realistic prototype data based on TypeScript
+                    objects or interfaces
+                </p>
+            </header>
+            <main>
+                <DataGenerator />
+            </main>
             <Separator className="my-10" />
             <section>
                 <h2 className="mb-1 text-xl font-semibold">Overview</h2>{" "}
@@ -44,6 +51,6 @@ export default function Home() {
                     easy to manage and scale your data generation needs.
                 </p>
             </section>
-        </main>
+        </div>
     )
 }

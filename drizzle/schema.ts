@@ -5,7 +5,7 @@ import {
     real,
     text,
     timestamp,
-    uniqueIndex
+    uniqueIndex,
 } from "drizzle-orm/pg-core"
 
 export const users = pgTable(
@@ -28,11 +28,23 @@ export const results = pgTable("results", {
     id: text("id")
         .default(sql`gen_random_uuid()`)
         .primaryKey(),
-    json: text("json").notNull(),
+    json: text("json"),
     userId: text("userId")
         .references(() => users.id, { onDelete: "cascade" })
         .notNull(),
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
+})
+
+export const generationResults = pgTable("generationResult", {
+    id: text("id")
+        .default(sql`gen_random_uuid()`)
+        .primaryKey(),
+    json: text("json").notNull(),
+    typeDefinition: text("typeDefinition").notNull(),
+    name: text("typeName").notNull(),
+    resultId: text("resultId")
+        .references(() => results.id, { onDelete: "cascade" })
+        .notNull(),
 })
 
 export const refreshTokens = pgTable("refreshTokens", {

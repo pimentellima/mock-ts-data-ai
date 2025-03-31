@@ -6,13 +6,13 @@ import { Inter } from "next/font/google"
 import Link from "next/link"
 import "./globals.css"
 import Providers from "./providers"
-import UserDialog from "./user-dialog"
+import UserDialog from "../components/user-dialog"
 import { db } from "@/drizzle/db"
 import { users } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
 import { Button } from "@/components/ui/button"
 import { auth } from "./auth/auth"
-import ToggleTheme from "./toggle-theme"
+import ToggleTheme from "../components/toggle-theme"
 
 const inter = Inter({ subsets: ["latin"] })
 

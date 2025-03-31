@@ -15,7 +15,7 @@ import { UserIcon } from "lucide-react"
 import { signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
-import { getLoggedUserCredits } from "./actions"
+import { getLoggedUserCredits } from "../app/actions"
 
 export default function UserDialog({
     user,
