@@ -37,7 +37,9 @@ export default function DataGenerator() {
     const [activeTab, setActiveTab] = useState("editor")
     const [exportFormat, setExportFormat] = useState("json")
     const [apiEnabled, setApiEnabled] = useState(false)
-    const [apiEndpoint, setApiEndpoint] = useState("")
+    const [apiEndpoints, setApiEndpoints] = useState<
+        { type: string; url: string }[]
+    >([])
 
     const addTypeDefinition = () => {
         const newId = String(Date.now())
@@ -200,13 +202,16 @@ export default function DataGenerator() {
     }
 
     const generateApiEndpoint = () => {
-        setApiEndpoint(
-            `https://api.example.com/mock/${typeDefinitions[0].name.toLowerCase()}`
-        )
+        const endpoints = typeDefinitions.map((type) => ({
+            type: type.name,
+            url: `https://api.example.com/mock/${type.name.toLowerCase()}`,
+        }))
+
+        setApiEndpoints(endpoints)
         setApiEnabled(true)
         toast({
-            title: "API endpoint created",
-            description: "Mock API endpoint is now available",
+            title: "API endpoints created",
+            description: `Created ${endpoints.length} mock API endpoints`,
         })
     }
 
@@ -442,21 +447,24 @@ export default function DataGenerator() {
                                             Enable Mock API Endpoint
                                         </Label>
                                     </div>
-                                    {!apiEndpoint && (
+                                    {apiEndpoints.length === 0 && (
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={generateApiEndpoint}
-                                            disabled={!results}
+                                            disabled={results?.length === 0}
                                         >
                                             <Server className="mr-2 h-4 w-4" />
-                                            Generate Endpoint
+                                            Generate Endpoints
                                         </Button>
                                     )}
                                 </div>
 
-                                {apiEnabled && (
-                                    <ApiConfig endpoint={apiEndpoint} />
+                                {apiEnabled && apiEndpoints.length > 0 && (
+                                    <ApiConfig
+                                        endpoints={apiEndpoints}
+                                        typeDefinitions={typeDefinitions}
+                                    />
                                 )}
                             </div>
                         </CardContent>
