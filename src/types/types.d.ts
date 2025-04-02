@@ -20,3 +20,10 @@ export interface GenerationResult {
     name: string
     json: string
 }
+
+export interface ResultWithGenerations {
+    id: string
+    generationResults: GenerationResult[]
+    apiEnabled: boolean
+    createdAt: Date
+}
