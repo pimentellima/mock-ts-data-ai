@@ -204,9 +204,9 @@ curl -X GET "${currentEndpoint}?record_id=<record_id>" -H "Accept: application/j
                                         </div>
                                         <div>
                                             <code className="bg-muted/50 p-1 rounded">
-                                                {endpoint.url}/{"{"}
+                                                {endpoint.url}?record_id={"<"}
                                                 {endpoint.type.toLowerCase()}_id
-                                                {"}"}
+                                                {">"}
                                             </code>
                                             <p className="text-muted-foreground">
                                                 Returns a specific{" "}
