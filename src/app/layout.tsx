@@ -89,30 +89,7 @@ export default async function RootLayout({
                             {children}
                             <Analytics />
                         </div>
-                        <footer
-                            className="h-14 mt-10 border-t w-full 
-                            flex items-center justify-between px-4 sm:px-10 md:px-40"
-                        >
-                            <p>
-                                <span className="opacity-85">Created by </span>
-                                <Link
-                                    className="hover:underline underline-offset-4 opacity-85 hover:opacity-100"
-                                    target="_blank"
-                                    href={"https://github.com/pimentellima"}
-                                >
-                                    pimentellima
-                                </Link>
-                            </p>
-                            <Link
-                                className="opacity-85 hover:opacity-100"
-                                target="_blank"
-                                href={
-                                    "https://github.com/pimentellima/mock-ts-data-ai"
-                                }
-                            >
-                                <GithubIcon className="w-10 h-10 fill-primary" />
-                            </Link>
-                        </footer>
+                     <div/>
                     </div>
                 </Providers>
             </body>
