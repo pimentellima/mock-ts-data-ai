@@ -30,6 +30,9 @@ export default function DataGenerator() {
             count: 10,
         },
     ])
+    const [apiEndpoints, setApiEndpoints] = useState<
+        { type: string; url: string }[]
+    >([])
     const [description, setDescription] = useState("")
     const [relationships, setRelationships] = useState<Relationship[]>([])
     const [results, setResults] = useState<GenerationResult[]>()
@@ -37,9 +40,6 @@ export default function DataGenerator() {
     const [activeTab, setActiveTab] = useState("editor")
     const [exportFormat, setExportFormat] = useState("json")
     const [apiEnabled, setApiEnabled] = useState(false)
-    const [apiEndpoints, setApiEndpoints] = useState<
-        { type: string; url: string }[]
-    >([])
 
     const addTypeDefinition = () => {
         const newId = String(Date.now())
@@ -101,7 +101,11 @@ export default function DataGenerator() {
                 })
                 return
             }
-
+            const endpoints = result.result!.map((res) => ({
+                type: res.name,
+                url: `${process.env.NEXT_PUBLIC_URL}/api/mock/${res.id}`,
+            }))
+            setApiEndpoints(endpoints)
             setResults(result.result!)
             setActiveTab("results")
 
@@ -201,17 +205,11 @@ export default function DataGenerator() {
         })
     }
 
-    const generateApiEndpoint = () => {
-        const endpoints = typeDefinitions.map((type) => ({
-            type: type.name,
-            url: `https://api.example.com/mock/${type.name.toLowerCase()}`,
-        }))
-
-        setApiEndpoints(endpoints)
+    const enableApiEndpoint = async () => {
         setApiEnabled(true)
         toast({
             title: "API endpoints created",
-            description: `Created ${endpoints.length} mock API endpoints`,
+            description: `Created mock API endpoints`,
         })
     }
 
@@ -451,7 +449,7 @@ export default function DataGenerator() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={generateApiEndpoint}
+                                            onClick={enableApiEndpoint}
                                             disabled={results?.length === 0}
                                         >
                                             <Server className="mr-2 h-4 w-4" />

@@ -15,7 +15,6 @@ interface ResultsDisplayProps {
 export default function ResultsDisplay({ results }: ResultsDisplayProps) {
     const [activeTab, setActiveTab] = useState<string>("")
     const preRef = useRef<HTMLPreElement>(null)
-    console.log("ResultsDisplay", results)
 
     useEffect(() => {
         if (!results || results.length === 0) return

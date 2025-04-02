@@ -15,6 +15,7 @@ export interface Relationship {
 }
 
 export interface GenerationResult {
+    id: string
     typeDefinition: string
     name: string
     json: string

@@ -2,11 +2,7 @@
 
 import { db } from "@/drizzle/db"
 import { generationResults, results, users } from "@/drizzle/schema"
-import {
-    GenerationResult,
-    Relationship,
-    TypeDefinition,
-} from "@/types/types"
+import { GenerationResult, Relationship, TypeDefinition } from "@/types/types"
 import { openai } from "@ai-sdk/openai"
 import { generateObject } from "ai"
 import { eq } from "drizzle-orm"
@@ -94,7 +90,11 @@ export async function generateMockData({
             schema: z.object({
                 results: z.array(
                     z.object({
-                        name: z.string().describe('Name of the generated object. Should match the TypeScript interface name.'),
+                        name: z
+                            .string()
+                            .describe(
+                                "Name of the generated object. Should match the TypeScript interface name."
+                            ),
                         jsonArray: z.string(),
                         typeDefinition: z.string(),
                     })
@@ -103,7 +103,7 @@ export async function generateMockData({
             prompt,
         })
 
-        const resultsArr = object.results.map((result) => {
+        const extractedJsonResults = object.results.map((result) => {
             const json = extractJson(result.jsonArray)
             if (!json) {
                 throw new Error("Invalid JSON format")
@@ -114,18 +114,28 @@ export async function generateMockData({
                 typeDefinition: result.typeDefinition,
             }
         })
-
+        let generationResultsArr: GenerationResult[] = []
         await db.transaction(async (tx) => {
             const [insertedResult] = await tx
                 .insert(results)
                 .values({ userId: user.id })
                 .returning()
-            for (const result of resultsArr) {
-                await tx.insert(generationResults).values({
-                    resultId: insertedResult.id,
-                    typeDefinition: result.typeDefinition,
-                    json: result.json,
-                    name: result.name,
+            for (const result of extractedJsonResults) {
+                const [generation] = await tx
+                    .insert(generationResults)
+                    .values({
+                        resultId: insertedResult.id,
+                        typeDefinition: result.typeDefinition,
+                        json: result.json,
+                        name: result.name,
+                    })
+                    .returning()
+
+                generationResultsArr.push({
+                    name: generation.name,
+                    json: generation.json,
+                    typeDefinition: generation.typeDefinition,
+                    id: generation.id,
                 })
             }
 
@@ -136,7 +146,7 @@ export async function generateMockData({
         })
 
         return {
-            result: resultsArr,
+            result: generationResultsArr,
         }
     } catch (e) {
         console.log(e)
