@@ -459,10 +459,7 @@ export default function DataGenerator() {
                                 </div>
 
                                 {apiEnabled && apiEndpoints.length > 0 && (
-                                    <ApiConfig
-                                        endpoints={apiEndpoints}
-                                        typeDefinitions={typeDefinitions}
-                                    />
+                                    <ApiConfig endpoints={apiEndpoints} />
                                 )}
                             </div>
                         </CardContent>
