@@ -3,11 +3,7 @@ import { Button } from "@/components/ui/button"
 import { db } from "@/drizzle/db"
 import { users } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
-import {
-    CircleDollarSign,
-    Home,
-    List
-} from "lucide-react"
+import { CircleDollarSign, Home, List } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import NavbarButton from "./navbar-button"
@@ -58,9 +54,9 @@ export default async function Navbar() {
                     />
                     <span className="font-bold">Data Generator</span>
                 </Link>
-                <div className="flex items-center gap-4">
-                    <ToggleTheme />
+                <div className="flex items-center">
                     <div className="flex gap-2">
+                        <ToggleTheme />
                         {navItems.map((item) => (
                             <NavbarButton
                                 key={item.name}
@@ -71,10 +67,7 @@ export default async function Navbar() {
                         ))}
                         <Button variant={"ghost"} size="sm" asChild>
                             {user ? (
-                                <UserDialog
-                                    user={JSON.parse(JSON.stringify(user))}
-                                    userCredits={userCredits}
-                                />
+                                <UserDialog userCredits={userCredits} />
                             ) : (
                                 <>
                                     <NavbarButton

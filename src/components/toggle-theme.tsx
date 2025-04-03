@@ -23,6 +23,7 @@ export default function ToggleTheme() {
     return (
         <Button
             variant="ghost"
+            size='sm'
             title="toggle theme"
             onClick={() => {
                 const newTheme = theme === "dark" ? "light" : "dark"
