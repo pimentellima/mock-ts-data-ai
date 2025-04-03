@@ -55,7 +55,9 @@ export default function DataGenerator() {
             {
                 id: newId,
                 name: `Type${typeDefinitions.length + 1}`,
-                code: "interface NewType {\n  id: number;\n  name: string;\n}",
+                code: `interface ${`Type${
+                    typeDefinitions.length + 1
+                }`} {\n  id: number;\n  name: string;\n}`,
                 count: 10,
             },
         ])
@@ -67,12 +69,83 @@ export default function DataGenerator() {
         value: string
     ) => {
         setTypeDefinitions(
-            typeDefinitions.map((def) =>
-                def.id === id ? { ...def, [field]: value } : def
-            )
+            typeDefinitions.map((def) => {
+                if (def.id === id) {
+                    // Create updated definition with the changed field
+                    const updatedDef = { ...def, [field]: value }
+
+                    if (field === "name") {
+                        // Check for different patterns in the code
+                        const namedInterfaceMatch =
+                            def.code.match(/interface\s+(\w+)/)
+                        const unnamedInterfaceMatch =
+                            def.code.match(/interface\s*{/)
+                        const namedTypeMatch =
+                            def.code.match(/type\s+(\w+)\s*=/)
+
+                        if (
+                            namedInterfaceMatch &&
+                            namedInterfaceMatch[1] === def.name
+                        ) {
+                            // Replace existing interface name
+                            updatedDef.code = def.code.replace(
+                                /(interface\s+)(\w+)(.*)/,
+                                `$1${value}$3`
+                            )
+                        } else if (unnamedInterfaceMatch) {
+                            // Add a name to unnamed interface
+                            updatedDef.code = def.code.replace(
+                                /(interface)(\s*)({)/,
+                                `$1 ${value} $3`
+                            )
+                        } else if (
+                            namedTypeMatch &&
+                            namedTypeMatch[1] === def.name
+                        ) {
+                            // Replace type name
+                            updatedDef.code = def.code.replace(
+                                /(type\s+)(\w+)(\s*=.*)/,
+                                `$1${value}$3`
+                            )
+                        }
+                        // If none of the patterns match, only the name will be updated
+                    } else if (field === "code") {
+                        // Check if new code has named interface or type
+                        const namedInterfaceMatch =
+                            value.match(/interface\s+(\w+)/)
+                        const namedTypeMatch = value.match(/type\s+(\w+)\s*=/)
+
+                        // Check previous code patterns
+                        const oldNamedInterfaceMatch =
+                            def.code.match(/interface\s+(\w+)/)
+                        const oldUnnamedInterfaceMatch =
+                            def.code.match(/interface\s*{/)
+                        const oldNamedTypeMatch =
+                            def.code.match(/type\s+(\w+)\s*=/)
+
+                        // If name previously matched or there was an unnamed interface, update name
+                        if (
+                            namedInterfaceMatch &&
+                            ((oldNamedInterfaceMatch &&
+                                def.name === oldNamedInterfaceMatch[1]) ||
+                                oldUnnamedInterfaceMatch)
+                        ) {
+                            updatedDef.name = namedInterfaceMatch[1]
+                        } else if (
+                            namedTypeMatch &&
+                            oldNamedTypeMatch &&
+                            def.name === oldNamedTypeMatch[1]
+                        ) {
+                            updatedDef.name = namedTypeMatch[1]
+                        }
+                    }
+
+                    return updatedDef
+                }
+                return def
+            })
         )
     }
-
     const removeTypeDefinition = (id: string) => {
         if (typeDefinitions.length > 1) {
             setTypeDefinitions(typeDefinitions.filter((def) => def.id !== id))
