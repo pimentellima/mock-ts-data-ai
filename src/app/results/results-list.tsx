@@ -26,10 +26,10 @@ import { Eye, Trash2 } from "lucide-react"
 import ResultDetailDialog from "./result-detail-dialog"
 import { useToast } from "@/components/ui/use-toast"
 import {
-    fetchResults,
+    getResultsByPage,
     toggleApiStatus,
-    deleteResult,
-    getTotalPages,
+    deleteResultById,
+    getResultsPageCount,
 } from "./actions"
 import type { ResultWithGenerations } from "@/types/types"
 
@@ -53,8 +53,8 @@ export default function ResultsList({ currentPage }: ResultsListProps) {
         const loadResults = async () => {
             setIsLoading(true)
             try {
-                const data = await fetchResults(currentPage)
-                const totalPages = await getTotalPages()
+                const data = await getResultsByPage(currentPage)
+                const totalPages = await getResultsPageCount()
                 setResults(data)
                 setTotalPages(totalPages)
             } catch (error) {
@@ -124,9 +124,14 @@ export default function ResultsList({ currentPage }: ResultsListProps) {
         ) {
             setIsDeleting(resultId)
             try {
-                await deleteResult(resultId)
+                await deleteResultById(resultId)
 
-                // Remove from local state
+                const newResults = results.filter(
+                    (result) => result.id !== resultId
+                )
+                if (newResults.length === 0 && currentPage > 1) {
+                    handlePageChange(currentPage - 1)
+                }
                 setResults(results.filter((result) => result.id !== resultId))
 
                 toast({
@@ -146,13 +151,10 @@ export default function ResultsList({ currentPage }: ResultsListProps) {
         }
     }
 
-    // For demo purposes, generate mock data if no results are available
     if (isLoading && results.length === 0) {
-        // This will be replaced by the skeleton component
         return null
     }
 
-    // If there are no results after loading
     if (!isLoading && results.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12">

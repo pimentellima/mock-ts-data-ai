@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface GenerationResult {
@@ -14,7 +14,6 @@ interface ResultsDisplayProps {
 
 export default function ResultsDisplay({ results }: ResultsDisplayProps) {
     const [activeTab, setActiveTab] = useState<string>("")
-    const preRef = useRef<HTMLPreElement>(null)
 
     useEffect(() => {
         if (!results || results.length === 0) return
@@ -34,23 +33,29 @@ export default function ResultsDisplay({ results }: ResultsDisplayProps) {
     return (
         <div className="space-y-4">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="flex flex-wrap">
-                    {results.map((result) => (
-                        <TabsTrigger
-                            key={result.name}
-                            value={result.name}
-                            className="flex-grow"
-                        >
-                            {result.name}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                {results.length > 1 && (
+                    <TabsList className="flex flex-wrap">
+                        {results.map((result) => (
+                            <TabsTrigger
+                                key={result.name}
+                                value={result.name}
+                                className="flex-grow"
+                            >
+                                {result.name}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                )}
 
                 {results.map((result) => (
-                    <TabsContent key={result.name} value={result.name}>
-                        <div className="border rounded-md overflow-auto bg-muted/30 max-h-[400px]">
-                            <pre ref={preRef} className="p-4 text-sm font-mono">
-                                {JSON.stringify(JSON.parse(result.json), null, 2)}
+                    <TabsContent key={result.name} value={result.name} className="overflow-auto max-h-[400px]">
+                        <div className="border rounded-md bg-muted/30 ">
+                            <pre className="p-4 text-sm font-mono">
+                                {JSON.stringify(
+                                    JSON.parse(result.json),
+                                    null,
+                                    2
+                                )}
                             </pre>
                         </div>
                     </TabsContent>

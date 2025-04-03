@@ -7,30 +7,20 @@ import { db } from "@/drizzle/db"
 import { ITEMS_PER_PAGE } from "@/constants"
 import { ResultWithGenerations } from "@/types/types"
 
-export async function getResults(pageParam: number) {
+export async function deleteResultById(resultId: string) {
     const session = await auth()
     if (!session?.user) {
         throw new Error("Unauthorized")
     }
-
-    const rows = await db.query.results.findMany({
-        where: eq(results.userId, session.user.id),
-        limit: ITEMS_PER_PAGE,
-        orderBy: [desc(results.createdAt)],
-        offset: ITEMS_PER_PAGE * (pageParam - 1),
+    const result = await db.query.results.findFirst({
+        where: eq(results.id, resultId),
     })
-    return rows as InferSelectModel<typeof results>[]
-}
-
-export async function deleteResult(resultId: string) {
-    const session = await auth()
-    if (!session?.user) {
+    if (result?.userId !== session.user.id) {
         throw new Error("Unauthorized")
     }
-
     await db.delete(results).where(eq(results.id, resultId))
 }
-export async function fetchResults(currentPage: number) {
+export async function getResultsByPage(currentPage: number) {
     const session = await auth()
     if (!session?.user) {
         throw new Error("Unauthorized")
@@ -57,7 +47,7 @@ export async function toggleApiStatus(resultId: string, apiEnabled: boolean) {
 
     await db.update(results).set({ apiEnabled }).where(eq(results.id, resultId))
 }
-export async function getTotalPages() {
+export async function getResultsPageCount() {
     const session = await auth()
     if (!session?.user) {
         throw new Error("Unauthorized")
