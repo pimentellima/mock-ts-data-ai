@@ -373,7 +373,7 @@ export default function DataGenerator() {
                 <TabsContent value="results">
                     <Card>
                         <CardContent className="pt-6 space-y-4">
-                            <ExportResultsControls />
+                            <ExportResultsControls results={results}/>
 
                             <ResultsDisplay results={results} />
 
