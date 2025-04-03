@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Currency, Database, Home, List } from "lucide-react"
+import { CircleDollarSign, Currency, Database, Home, List, LucideCurrency } from "lucide-react"
 import ToggleTheme from "./toggle-theme"
 import { auth } from "@/app/auth/auth"
 import { db } from "@/drizzle/db"
@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm"
 import { users } from "@/drizzle/schema"
 import UserDialog from "./user-dialog"
 import NavbarButton from "./navbar-button"
+import Image from "next/image"
 
 export default async function Navbar() {
     const session = await auth()
@@ -36,7 +37,7 @@ export default async function Navbar() {
         {
             name: "Buy Credits",
             href: "/buy-credits",
-            icon: <Currency className="h-4 w-4 mr-2" />,
+            icon: <CircleDollarSign className="h-4 w-4 mr-2" />,
         },
     ]
 
@@ -44,7 +45,7 @@ export default async function Navbar() {
         <nav className="sticky bg-background z-10 top-0 border-b">
             <div className="container mx-auto flex h-16 items-center px-4 md:px-28 justify-between">
                 <Link href="/" className="flex items-center gap-2 mr-6">
-                    <Database className="h-6 w-6" />
+                    <Image width={30} height={30} src='/logo.png' alt='logo'/>
                     <span className="font-bold">Data Generator</span>
                 </Link>
                 <div className="flex items-center gap-4">
