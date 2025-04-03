@@ -27,7 +27,23 @@ export const authOptions = {
     },
     callbacks: {
         async signIn({ user }) {
-            await db.insert(users).values({ id: user.id }).onConflictDoNothing()
+            if (user?.email) {
+                const existingUser = await db.query.users.findFirst({
+                    where: eq(users.email, user.email),
+                })
+                if (existingUser) {
+                    user.id = existingUser.id
+                    return true
+                }
+                const [newUser] = await db
+                    .insert(users)
+                    .values({
+                        email: user.email,
+                        id: crypto.randomUUID(),
+                    })
+                    .returning()
+                user.id = newUser.id
+            }
 
             return true
         },
@@ -39,9 +55,7 @@ export const authOptions = {
                 token.expiresAt = new Date(Date.now() + ACCESS_TOKEN_TTL)
             }
 
-            const expiresAt = token.expiresAt as Date
-
-            if (new Date() < new Date(expiresAt)) {
+            if (new Date() < new Date(token.expiresAt as any)) {
                 return token
             }
 

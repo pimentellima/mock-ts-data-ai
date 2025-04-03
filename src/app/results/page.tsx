@@ -1,31 +1,43 @@
+import { Suspense } from "react"
+import type { Metadata } from "next"
+import ResultsList from "./results-list"
+import ResultsPageSkeleton from "./results-page-skeleton"
+import { auth } from "../auth/auth"
 import { redirect } from "next/navigation"
-import { auth } from "@/app/auth/auth"
-import { db } from "@/drizzle/db"
-import { desc, eq } from "drizzle-orm"
-import { results } from "@/drizzle/schema"
-import ResultsInfiniteQuery from "./results-inifinite-query"
-import { ITEMS_PER_PAGE } from "@/constants"
 
-export default async function Page() {
+export const metadata: Metadata = {
+    title: "Generated Results | AI Prototype Data Generator",
+    description:
+        "View and manage your previously generated prototype data with pagination and filtering options.",
+}
+
+export default async function ResultsPage({
+    searchParams,
+}: {
+    searchParams: { page?: string }
+}) {
     const session = await auth()
-
-    if (!session?.user) {
-        redirect("/")
+    if(!session) {
+        redirect('/sign-in')
     }
-
-    const rows = await db.query.results.findMany({
-        where: eq(results.userId, session.user.id),
-        orderBy: [desc(results.createdAt)],
-        limit: ITEMS_PER_PAGE,
-    })
+    const currentPage = Number(searchParams.page) || 1
 
     return (
-        <div className="flex flex-col justify-center gap-2 pt-4">
-            {rows?.length && rows.length > 0 ? (
-                <ResultsInfiniteQuery initialResults={rows} />
-            ) : (
-                <p className="text-center">No results.</p>
-            )}
+        <div className="container mx-auto py-6 px-4 md:px-6">
+            <header className="mb-8">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Generated Results
+                </h1>
+                <p className="text-muted-foreground mt-2">
+                    View and manage your previously generated prototype data
+                </p>
+            </header>
+
+            <main>
+                <Suspense fallback={<ResultsPageSkeleton />}>
+                    <ResultsList currentPage={currentPage} />
+                </Suspense>
+            </main>
         </div>
     )
 }

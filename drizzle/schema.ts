@@ -1,11 +1,12 @@
 import { initialCredits } from "@/constants"
-import { InferInsertModel, sql } from "drizzle-orm"
+import { InferInsertModel, relations, sql } from "drizzle-orm"
 import {
+    boolean,
     pgTable,
     real,
     text,
     timestamp,
-    uniqueIndex
+    uniqueIndex,
 } from "drizzle-orm/pg-core"
 
 export const users = pgTable(
@@ -28,11 +29,24 @@ export const results = pgTable("results", {
     id: text("id")
         .default(sql`gen_random_uuid()`)
         .primaryKey(),
-    json: text("json").notNull(),
+    json: text("json"),
     userId: text("userId")
         .references(() => users.id, { onDelete: "cascade" })
         .notNull(),
+    apiEnabled: boolean("apiEnabled").default(true),
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
+})
+
+export const generationResults = pgTable("generationResult", {
+    id: text("id")
+        .default(sql`gen_random_uuid()`)
+        .primaryKey(),
+    json: text("json").notNull(),
+    typeDefinition: text("typeDefinition").notNull(),
+    name: text("typeName").notNull(),
+    resultId: text("resultId")
+        .references(() => results.id, { onDelete: "cascade" })
+        .notNull(),
 })
 
 export const refreshTokens = pgTable("refreshTokens", {
@@ -48,3 +62,18 @@ export const refreshTokens = pgTable("refreshTokens", {
 
 export type NewUser = InferInsertModel<typeof users>
 export type NewSession = InferInsertModel<typeof refreshTokens>
+
+export const generationResultsRelations = relations(generationResults, ({ one }) => ({
+    result: one(results, {
+        fields: [generationResults.resultId],
+        references: [results.id],
+    }),
+}))
+export const resultsRelations = relations(results, ({ many }) => ({
+    generationResults: many(generationResults),
+    user: many(users),
+}))
+export const usersRelations = relations(users, ({ many }) => ({
+    results: many(results),
+    refreshTokens: many(refreshTokens),
+}))

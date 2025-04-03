@@ -25,6 +25,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { createCheckoutSession } from "./actions"
+import { itemsPerCredit } from "@/constants"
 
 const schema = z.object({ credits: z.enum(["150", "300", "900"]) })
 
@@ -109,8 +110,8 @@ export default function CheckoutForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                Select the number of credits to buy (Usage: 25
-                                itens generated per 1 credit)
+                                {`Select the number of credits to buy (Usage: ${itemsPerCredit}
+                                itens generated per 1 credit)`}
                             </FormLabel>
                             <FormControl>
                                 <Select

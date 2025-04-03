@@ -12,34 +12,34 @@ import {
 import { User } from "@/types/next-auth"
 import { useQuery } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
-import { getLoggedUserCredits } from "./actions"
+import { getLoggedUserCredits } from "../app/actions"
+import Image from "next/image"
 
 export default function UserDialog({
-    user,
     userCredits,
 }: {
-    user: User
     userCredits?: number | null
 }) {
     const [open, setOpen] = useState(false)
+    const { data } = useSession()
+    const user = data?.user as User
     const { data: credits } = useQuery({
         initialData: userCredits,
         queryFn: async () => await getLoggedUserCredits(),
         queryKey: ["credits"],
     })
-
     return (
         <Dialog onOpenChange={(open) => setOpen(open)} open={open}>
             <DialogTrigger>
-                <Avatar>
-                    <AvatarImage src={user?.image || ""} alt="" />
-                    <AvatarFallback>
-                        <UserIcon />
-                    </AvatarFallback>
-                </Avatar>
+                    <Avatar>
+                        <AvatarImage src={user?.image || ''} alt="User image" />
+                        <AvatarFallback>
+                            <UserIcon />
+                        </AvatarFallback>
+                    </Avatar>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>

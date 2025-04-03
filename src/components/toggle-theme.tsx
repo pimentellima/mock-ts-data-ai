@@ -3,6 +3,7 @@
 import { MoonIcon, SunIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { Button } from "./ui/button"
 
 export default function ToggleTheme() {
     const { theme, setTheme } = useTheme()
@@ -20,7 +21,9 @@ export default function ToggleTheme() {
     if (!mounted) return <></>
 
     return (
-        <button
+        <Button
+            variant="ghost"
+            size='sm'
             title="toggle theme"
             onClick={() => {
                 const newTheme = theme === "dark" ? "light" : "dark"
@@ -33,6 +36,6 @@ export default function ToggleTheme() {
             ) : (
                 <SunIcon className="h-5 w-5" />
             )}
-        </button>
+        </Button>
     )
 }
