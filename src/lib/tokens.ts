@@ -1,11 +1,6 @@
-import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "@/constants"
+import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL, TOKEN_TTL } from "@/constants"
 import { db } from "@/drizzle/db"
 import { refreshTokens } from "@/drizzle/schema"
-import {
-    createRefreshToken,
-    extendRefreshToken,
-    getRefreshToken,
-} from "@/drizzle/tokens"
 import { eq } from "drizzle-orm"
 import { JWT } from "next-auth/jwt"
 
@@ -14,16 +9,32 @@ export async function obtainAccessToken(userId: string) {
         where: eq(refreshTokens.userId, userId),
     })
     if (!refreshToken) {
-        return await createRefreshToken(userId)
+        const [token] = await db
+            .insert(refreshTokens)
+            .values({
+                expires: new Date(Date.now() + REFRESH_TOKEN_TTL),
+                userId,
+            })
+            .returning()
+        return token
     }
-
-    return await extendRefreshToken(refreshToken.token, REFRESH_TOKEN_TTL)
+    const [extendedToken] = await db
+        .update(refreshTokens)
+        .set({
+            expires: new Date(Date.now() + REFRESH_TOKEN_TTL),
+        })
+        .where(eq(refreshTokens.token, refreshToken.token))
+        .returning()
+    return extendedToken
 }
 
 export async function refreshAccessToken(
     token: JWT & { refreshToken: { token: string } }
 ) {
-    const tokenInDb = await getRefreshToken(token.refreshToken.token)
+    const tokenInDb = await db.query.refreshTokens.findFirst({
+        where: eq(refreshTokens.token, token.refreshToken.token),
+    })
+
     if (!tokenInDb) {
         throw new Error("Refresh token not found")
     }

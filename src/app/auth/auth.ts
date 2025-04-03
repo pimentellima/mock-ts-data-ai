@@ -39,9 +39,7 @@ export const authOptions = {
                 token.expiresAt = new Date(Date.now() + ACCESS_TOKEN_TTL)
             }
 
-            const expiresAt = token.expiresAt as Date
-
-            if (new Date() < new Date(expiresAt)) {
+            if (new Date() < new Date(token.expiresAt as any)) {
                 return token
             }
 
