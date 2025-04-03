@@ -3,7 +3,14 @@ import { toast } from "@/components/ui/use-toast"
 import { Clipboard, Play } from "lucide-react"
 import { useState } from "react"
 import { Button } from "../ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "../ui/dialog"
+import useClipboard from "@/app/hooks/use-clipboard"
 
 interface TestApiControlsProps {
     currentApiUrl: string
@@ -23,6 +30,7 @@ export default function TestApiControls({
     const [testEndpoint, setTestEndpoint] = useState("")
     const [testResponse, setTestResponse] = useState<any>(null)
     const [testError, setTestError] = useState<string | null>(null)
+    const { copyToClipboard } = useClipboard()
 
     const testApiEndpoint = async (endpointType: "all" | "single") => {
         setIsLoading(true)
@@ -135,18 +143,13 @@ export default function TestApiControls({
                                         variant="outline"
                                         size="sm"
                                         onClick={() => {
-                                            navigator.clipboard.writeText(
+                                            copyToClipboard(
                                                 JSON.stringify(
                                                     testResponse,
                                                     null,
                                                     2
                                                 )
                                             )
-                                            toast({
-                                                title: "Copied to clipboard",
-                                                description:
-                                                    "Response data has been copied",
-                                            })
                                         }}
                                     >
                                         <Clipboard className="h-4 w-4 mr-2" />

@@ -2,6 +2,8 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import ResultsList from "./results-list"
 import ResultsPageSkeleton from "./results-page-skeleton"
+import { auth } from "../auth/auth"
+import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
     title: "Generated Results | AI Prototype Data Generator",
@@ -9,12 +11,15 @@ export const metadata: Metadata = {
         "View and manage your previously generated prototype data with pagination and filtering options.",
 }
 
-export default function ResultsPage({
+export default async function ResultsPage({
     searchParams,
 }: {
     searchParams: { page?: string }
 }) {
-    // Get the current page from the URL query parameters
+    const session = await auth()
+    if(!session) {
+        redirect('/sign-in')
+    }
     const currentPage = Number(searchParams.page) || 1
 
     return (

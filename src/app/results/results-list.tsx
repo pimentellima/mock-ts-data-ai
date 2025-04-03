@@ -32,6 +32,7 @@ import {
     getResultsPageCount,
 } from "./actions"
 import type { ResultWithGenerations } from "@/types/types"
+import ResultsPageSkeleton from "./results-page-skeleton"
 
 interface ResultsListProps {
     currentPage: number
@@ -152,7 +153,7 @@ export default function ResultsList({ currentPage }: ResultsListProps) {
     }
 
     if (isLoading && results.length === 0) {
-        return null
+        return <ResultsPageSkeleton />
     }
 
     if (!isLoading && results.length === 0) {

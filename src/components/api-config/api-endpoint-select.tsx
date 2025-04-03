@@ -1,3 +1,4 @@
+import useClipboard from "@/app/hooks/use-clipboard"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,6 +24,7 @@ export default function ApiEndpointSelect({
     selectedApi,
     setSelectedApi,
 }: ApiEndpointSelectProps) {
+    const { copyToClipboard } = useClipboard()
     return (
         <div className="flex items-center justify-between">
             <Label>API Endpoint:</Label>
@@ -53,11 +55,7 @@ export default function ApiEndpointSelect({
                     variant="outline"
                     size="icon"
                     onClick={() => {
-                        navigator.clipboard.writeText(currentApiUrl)
-                        toast({
-                            title: "Copied to clipboard",
-                            description: "API endpoint has been copied",
-                        })
+                        copyToClipboard(currentApiUrl)
                     }}
                 >
                     <Clipboard className="h-4 w-4" />

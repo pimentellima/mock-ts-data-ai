@@ -7,6 +7,7 @@ export default function useClipboard() {
         toast({
             title: "Copied to clipboard",
             description: "The data has been copied to your clipboard",
+            duration: 2000,
         })
     }
 

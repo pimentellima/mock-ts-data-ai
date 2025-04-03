@@ -23,11 +23,11 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
-                    <Toaster />
                     <div className="min-h-screen flex flex-col justify-between">
                         <Navbar />
                         <div className="mx-4 sm:mx-10 md:mx-40">
                             {children}
+                            <Toaster />
                             <Analytics />
                         </div>
                         <div />

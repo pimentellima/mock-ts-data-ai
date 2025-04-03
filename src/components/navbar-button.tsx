@@ -9,7 +9,7 @@ export default function NavbarButton({
     name,
 }: {
     href: string
-    icon: React.ReactNode
+    icon?: React.ReactNode
     name: string
 }) {
     const pathname = usePathname()

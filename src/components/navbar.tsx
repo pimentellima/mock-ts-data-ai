@@ -1,14 +1,18 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { CircleDollarSign, Currency, Database, Home, List, LucideCurrency } from "lucide-react"
-import ToggleTheme from "./toggle-theme"
 import { auth } from "@/app/auth/auth"
+import { Button } from "@/components/ui/button"
 import { db } from "@/drizzle/db"
-import { eq } from "drizzle-orm"
 import { users } from "@/drizzle/schema"
-import UserDialog from "./user-dialog"
-import NavbarButton from "./navbar-button"
+import { eq } from "drizzle-orm"
+import {
+    CircleDollarSign,
+    Home,
+    List
+} from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
+import NavbarButton from "./navbar-button"
+import ToggleTheme from "./toggle-theme"
+import UserDialog from "./user-dialog"
 
 export default async function Navbar() {
     const session = await auth()
@@ -45,7 +49,13 @@ export default async function Navbar() {
         <nav className="sticky bg-background z-10 top-0 border-b">
             <div className="container mx-auto flex h-16 items-center px-4 md:px-28 justify-between">
                 <Link href="/" className="flex items-center gap-2 mr-6">
-                    <Image width={30} height={30} src='/logo.png' alt='logo'/>
+                    <Image
+                        className="bg-black rounded-md p-0.5"
+                        width={30}
+                        height={30}
+                        src="/logo.png"
+                        alt="logo"
+                    />
                     <span className="font-bold">Data Generator</span>
                 </Link>
                 <div className="flex items-center gap-4">
@@ -67,12 +77,14 @@ export default async function Navbar() {
                                 />
                             ) : (
                                 <>
-                                    <Button asChild variant={"link"}>
-                                        <Link href="/sign-in">Sign in</Link>
-                                    </Button>
-                                    <Button asChild variant={"link"}>
-                                        <Link href="/sign-up">Sign up</Link>
-                                    </Button>
+                                    <NavbarButton
+                                        href={"/sign-in"}
+                                        name={"Sign in"}
+                                    />
+                                    <NavbarButton
+                                        href={"/sign-up"}
+                                        name={"Sign up"}
+                                    />
                                 </>
                             )}
                         </Button>

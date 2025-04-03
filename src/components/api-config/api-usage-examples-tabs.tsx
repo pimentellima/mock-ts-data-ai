@@ -84,7 +84,7 @@ export default function ApiUsageExamplesTabs({
                 </TabsContent>
 
                 <TabsContent value="curl" className="relative">
-                    <pre className="p-3 rounded-md bg-muted/50 text-sm font-mono overflow-x-auto ">
+                    <pre className="p-3 rounded-md bg-muted/50 text-sm font-mono overflow-x-auto sm:max-w-[870px]">
                         {curlCode}
                     </pre>
                     <Button
