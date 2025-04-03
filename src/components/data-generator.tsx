@@ -373,9 +373,13 @@ export default function DataGenerator() {
                 <TabsContent value="results">
                     <Card>
                         <CardContent className="pt-6 space-y-4">
-                            <ExportResultsControls results={results}/>
+                            <ExportResultsControls results={results} />
 
-                            <ResultsDisplay results={results} />
+                            <ResultsDisplay
+                                activeTab={selectedApi}
+                                setActiveTab={setSelectedApi}
+                                results={results}
+                            />
 
                             <div className="border-t pt-4">
                                 <div className="flex items-center justify-between">

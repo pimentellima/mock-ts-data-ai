@@ -92,7 +92,11 @@ export default function ResultDetailDialog({
                     </div>
                     <ExportResultsControls results={result.generationResults} />
 
-                    <ResultsDisplay results={result.generationResults} />
+                    <ResultsDisplay
+                        activeTab={selectedApi}
+                        setActiveTab={setSelectedApi}
+                        results={result.generationResults}
+                    />
 
                     {result.apiEnabled && apiEndpoints.length > 0 && (
                         <div className="mt-4 space-y-4">

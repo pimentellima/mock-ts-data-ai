@@ -10,11 +10,15 @@ interface GenerationResult {
 
 interface ResultsDisplayProps {
     results?: GenerationResult[]
+    activeTab: string
+    setActiveTab: (tab: string) => void
 }
 
-export default function ResultsDisplay({ results }: ResultsDisplayProps) {
-    const [activeTab, setActiveTab] = useState<string>("")
-
+export default function ResultsDisplay({
+    results,
+    activeTab,
+    setActiveTab,
+}: ResultsDisplayProps) {
     useEffect(() => {
         if (!results || results.length === 0) return
         if (results.length > 0 && !results.some((r) => r.name === activeTab)) {
@@ -48,7 +52,11 @@ export default function ResultsDisplay({ results }: ResultsDisplayProps) {
                 )}
 
                 {results.map((result) => (
-                    <TabsContent key={result.name} value={result.name} className="overflow-auto max-h-[400px]">
+                    <TabsContent
+                        key={result.name}
+                        value={result.name}
+                        className="overflow-auto max-h-[400px]"
+                    >
                         <div className="border rounded-md bg-muted/30 ">
                             <pre className="p-4 text-sm font-mono">
                                 {JSON.stringify(
