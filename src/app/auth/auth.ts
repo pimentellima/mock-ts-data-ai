@@ -27,7 +27,23 @@ export const authOptions = {
     },
     callbacks: {
         async signIn({ user }) {
-            await db.insert(users).values({ id: user.id }).onConflictDoNothing()
+            if (user?.email) {
+                const existingUser = await db.query.users.findFirst({
+                    where: eq(users.email, user.email),
+                })
+                if (existingUser) {
+                    user.id = existingUser.id
+                    return true
+                }
+                const [newUser] = await db
+                    .insert(users)
+                    .values({
+                        email: user.email,
+                        id: crypto.randomUUID(),
+                    })
+                    .returning()
+                user.id = newUser.id
+            }
 
             return true
         },
