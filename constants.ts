@@ -1,4 +1,5 @@
-export const initialCredits = 5
+export const initialCredits = 2.5
+export const itemsPerCredit = 15
 export const ITEMS_PER_PAGE = 6
 export const TOKEN_TTL = 2 * 24 * 60 * 60 * 1000
 
