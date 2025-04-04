@@ -72,7 +72,6 @@ export async function purchaseCredits(credits: number) {
     if (!session) {
         redirect(`sign-in?redirect=buy-credits`)
     }
-    console.log(credits)
     const user = await db.query.users.findFirst({
         where: eq(users.id, session.user.id),
     })
