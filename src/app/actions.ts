@@ -8,7 +8,7 @@ import { generateObject } from "ai"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 import { auth } from "./auth/auth"
-import { itemsPerCredit } from "@/constants"
+import { ITEMS_PER_CREDIT } from "@/constants"
 
 export async function getLoggedUserCredits() {
     const session = await auth()
@@ -51,7 +51,7 @@ export async function generateMockData({
             (acc, typeDef) => acc + (typeDef.count || 1),
             0
         )
-        const creditsUsage = count / itemsPerCredit
+        const creditsUsage = count / ITEMS_PER_CREDIT
 
         if (creditsUsage > user.credits)
             return { error: "You don't have enough credits" }

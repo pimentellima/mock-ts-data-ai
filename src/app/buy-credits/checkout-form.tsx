@@ -25,7 +25,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { createCheckoutSession } from "./actions"
-import { itemsPerCredit } from "@/constants"
+import { ITEMS_PER_CREDIT } from "@/constants"
 
 const schema = z.object({ credits: z.enum(["150", "300", "900"]) })
 
@@ -64,20 +64,6 @@ export default function CheckoutForm() {
         }
         const credits = form.getValues("credits")
 
-        if (elements == null || stripe == null) {
-            return
-        }
-
-        const { error: submitError } = await elements.submit()
-        if (submitError?.message) {
-            toast({
-                title: "An error occurred",
-                description: submitError.message,
-                variant: "destructive",
-            })
-            return
-        }
-
         const res = await createCheckoutSession({
             credits: parseInt(credits),
         })
@@ -110,7 +96,7 @@ export default function CheckoutForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                {`Select the number of credits to buy (Usage: ${itemsPerCredit}
+                                {`Select the number of credits to buy (Usage: ${ITEMS_PER_CREDIT}
                                 itens generated per 1 credit)`}
                             </FormLabel>
                             <FormControl>

@@ -1,4 +1,4 @@
-import { initialCredits } from "@/constants"
+import { INITIAL_CREDITS } from "@/constants"
 import { InferInsertModel, relations, sql } from "drizzle-orm"
 import {
     boolean,
@@ -16,7 +16,7 @@ export const users = pgTable(
         name: text("name"),
         email: text("email").unique(),
         password: text("password"),
-        credits: real("credits").notNull().default(initialCredits),
+        credits: real("credits").notNull().default(INITIAL_CREDITS),
     },
     (users) => {
         return {
