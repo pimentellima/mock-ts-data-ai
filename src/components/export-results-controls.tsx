@@ -74,7 +74,7 @@ export default function ExportResultsControls({
 
             const blob = new Blob([content], { type: mimeType })
             element.href = URL.createObjectURL(blob)
-            element.download = `prototype-data.${extension}`
+            element.download = `mock-data.${extension}`
             document.body.appendChild(element)
             element.click()
             document.body.removeChild(element)

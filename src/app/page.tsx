@@ -4,23 +4,45 @@ import { Code, Database, Server, Download } from "lucide-react"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-    title: "AI Prototype Data Generator | Generate TypeScript Mock Data",
+    title: "AI Mock Data Generator | Generate realistic JSON data",
     description:
-        "Generate realistic prototype data based on TypeScript interfaces and objects. Create mock APIs, export to JSON, CSV, SQL, and test endpoints with our AI-powered data generator.",
+        "Generate realistic mock data based on TypeScript interfaces and objects. Create mock APIs, export to JSON, CSV, SQL, and test endpoints with our AI-powered data generator.",
     keywords: [
-        "prototype data generator",
-        "typescript mock data",
-        "mock api generator",
-        "json data generator",
-        "typescript interface data",
-        "test data generator",
-        "frontend development tools",
-        "api testing tool",
+        "AI data generator",
+        "mock data generator",
+        "prototype data tool",
+        "TypeScript data generator",
+        "frontend development tool",
+        "UI/UX prototyping data",
+        "React test data",
+        "Next.js development tools",
+        "realistic test data",
+        "interface-based data generation",
+        "frontend prototyping",
+        "TypeScript interface data",
+        "web application testing",
+        "mock API data",
+        "development test data",
+        "QA testing tools",
+        "dummy data generator",
+        "AI-powered test data",
+        "data scaffolding tool",
+        "frontend testing utilities",
+        "JSON data generator",
+        "CSV data generator",
+        "SQL data generator",
+        "export mock data to JSON",
+        "export mock data to CSV",
+        "export mock data to SQL",
+        "structured data formats",
+        "data generation for testing",
+        "data generation for prototyping",
+        "data generation for UI/UX design",
     ],
     openGraph: {
-        title: "AI Prototype Data Generator | TypeScript Mock Data Tool",
+        title: "AI Mock Data Generator | TypeScript Mock Data Tool",
         description:
-            "Generate realistic prototype data from TypeScript interfaces. Create mock APIs, export to JSON, CSV, SQL formats for frontend development.",
+            "Generate realistic mock data from TypeScript interfaces. Create mock APIs, export to JSON, CSV, SQL formats for frontend development.",
         type: "website",
     },
 }
@@ -30,10 +52,10 @@ export default function Home() {
         <div className="container mx-auto py-6 px-4 md:px-6 min-h-screen flex flex-col">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">
-                    AI Prototype Data Generator
+                    AI Mock Data Generator
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                    Generate realistic prototype data based on TypeScript
+                    Generate realistic mock data based on TypeScript
                     objects or interfaces
                 </p>
             </header>
@@ -206,12 +228,12 @@ export default function Home() {
 
                 <div className="mt-12 text-center text-sm text-muted-foreground">
                     <p>
-                        AI Prototype Data Generator — A powerful tool for
-                        generating TypeScript-based mock data for frontend
+                        AI Mock Data Generator — A powerful tool for
+                        generating TypeScript-based data for frontend
                         development, API testing, and application prototyping.
                     </p>
                     <p className="mt-2">
-                        © {new Date().getFullYear()} AI Prototype Data
+                        © {new Date().getFullYear()} AI Mock Data
                         Generator. All rights reserved.
                     </p>
                 </div>

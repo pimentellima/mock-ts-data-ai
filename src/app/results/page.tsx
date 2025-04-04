@@ -6,9 +6,9 @@ import { auth } from "../auth/auth"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
-    title: "Generated Results | AI Prototype Data Generator",
+    title: "Generated Results | AI Mock Data Generator",
     description:
-        "View and manage your previously generated prototype data with pagination and filtering options.",
+        "View and manage your previously generated mock data with pagination and filtering options.",
 }
 
 export default async function ResultsPage({
@@ -29,7 +29,7 @@ export default async function ResultsPage({
                     Generated Results
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                    View and manage your previously generated prototype data
+                    View and manage your previously generated mock data
                 </p>
             </header>
 
