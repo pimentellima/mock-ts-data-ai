@@ -71,7 +71,7 @@ export default function Home() {
                             About This Tool
                         </h2>
                         <p className="text-muted-foreground mb-4">
-                            The AI Prototype Data Generator is a powerful tool
+                            The AI Mock Data Generator is a powerful tool
                             for frontend developers, UI/UX designers, and QA
                             engineers who need realistic data for prototyping
                             and testing applications.
