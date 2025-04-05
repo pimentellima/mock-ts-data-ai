@@ -55,7 +55,7 @@ export default function UserDialog({
                         </Avatar>
                         <div className="flex flex-col text-sm">
                             <p>{user?.email || user?.name}</p>
-                            <p>{`Remaining credits: ${credits}`}</p>
+                            <p>{`Remaining credits: ${credits?.toFixed(2)}`}</p>
                         </div>
                     </div>
                 </div>
