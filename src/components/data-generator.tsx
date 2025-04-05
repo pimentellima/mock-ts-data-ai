@@ -21,6 +21,8 @@ import ApiUsageExamplesTabs from "./api-config/api-usage-examples-tabs"
 import EndpointsDocAccordion from "./api-config/endpoints-doc-accordion"
 import ExportResultsControls from "./export-results-controls"
 import TestApiControls from "./api-config/test-api-controls"
+import { ITEMS_PER_CREDIT } from "@/constants"
+import { formatCredits } from "@/lib/format-credits"
 
 export default function DataGenerator() {
     const [typeDefinitions, setTypeDefinitions] = useState<TypeDefinition[]>([
@@ -28,7 +30,7 @@ export default function DataGenerator() {
             id: "1",
             name: "User",
             code: "interface User {\n  id: number;\n  name: string;\n  email: string;\n  age?: number;\n}",
-            count: 10,
+            count: 15,
         },
     ])
     const [apiEndpoints, setApiEndpoints] = useState<
@@ -47,6 +49,9 @@ export default function DataGenerator() {
         apiEndpoints.find((e) => e.name === selectedApi)?.url || ""
 
     const [isLoading, setIsLoading] = useState(false)
+    const totalCredits =
+        typeDefinitions.reduce((acc, def) => acc + def.count, 0) /
+        ITEMS_PER_CREDIT
 
     const addTypeDefinition = () => {
         const newId = String(Date.now())
@@ -439,7 +444,9 @@ export default function DataGenerator() {
                 disabled={isGenerating}
                 className="w-full"
             >
-                {isGenerating ? "Generating..." : "Generate Data"}
+                {isGenerating
+                    ? "Generating..."
+                    : `Generate Data (${formatCredits(totalCredits)} credits)`}
             </Button>
             <Toaster />
         </div>

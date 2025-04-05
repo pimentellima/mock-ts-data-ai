@@ -9,6 +9,7 @@ import Link from "next/link"
 import NavbarButton from "./navbar-button"
 import ToggleTheme from "./toggle-theme"
 import UserDialog from "./user-dialog"
+import { formatCredits } from "@/lib/format-credits"
 
 export default async function Navbar() {
     const session = await auth()
@@ -35,7 +36,9 @@ export default async function Navbar() {
             icon: <List className="h-4 w-4 mr-2" />,
         },
         {
-            name: "Buy Credits",
+            name: userCredits
+                ? `Buy Credits (${formatCredits(userCredits)} left)`
+                : "Buy Credits",
             href: "/buy-credits",
             icon: <CircleDollarSign className="h-4 w-4 mr-2" />,
         },
@@ -67,7 +70,7 @@ export default async function Navbar() {
                         ))}
                         <Button variant={"ghost"} size="sm" asChild>
                             {user ? (
-                                <UserDialog userCredits={userCredits} />
+                                <UserDialog userCredits={userCredits || 0} />
                             ) : (
                                 <>
                                     <NavbarButton

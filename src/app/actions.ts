@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm"
 import { z } from "zod"
 import { auth } from "./auth/auth"
 import { ITEMS_PER_CREDIT } from "@/constants"
+import { revalidatePath } from "next/cache"
 
 export async function getLoggedUserCredits() {
     const session = await auth()
@@ -145,6 +146,7 @@ export async function generateMockData({
                 .set({ credits: user.credits - creditsUsage })
                 .where(eq(users.id, user.id))
         })
+        revalidatePath("/", "layout")
 
         return {
             result: generationResultsArr,

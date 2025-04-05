@@ -2,6 +2,7 @@ import { db } from "@/drizzle/db"
 import { users } from "@/drizzle/schema"
 import { stripe } from "@/lib/stripe"
 import { eq } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
                 credits: user.credits + Number(session.metadata.credits),
             })
             .where(eq(users.id, userId))
-
+        revalidatePath("/", "layout")
         return NextResponse.redirect(new URL("/", request.url))
     } catch (error) {
         console.error("Error handling successful checkout:", error)

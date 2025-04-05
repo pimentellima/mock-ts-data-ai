@@ -14,32 +14,28 @@ import { useQuery } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getLoggedUserCredits } from "../app/actions"
 import Image from "next/image"
 
 export default function UserDialog({
     userCredits,
 }: {
-    userCredits?: number | null
+    userCredits: number | null
 }) {
     const [open, setOpen] = useState(false)
     const { data } = useSession()
     const user = data?.user as User
-    const { data: credits } = useQuery({
-        initialData: userCredits,
-        queryFn: async () => await getLoggedUserCredits(),
-        queryKey: ["credits"],
-    })
+  
     return (
         <Dialog onOpenChange={(open) => setOpen(open)} open={open}>
             <DialogTrigger>
-                    <Avatar>
-                        <AvatarImage src={user?.image || ''} alt="User image" />
-                        <AvatarFallback>
-                            <UserIcon />
-                        </AvatarFallback>
-                    </Avatar>
+                <Avatar>
+                    <AvatarImage src={user?.image || ""} alt="User image" />
+                    <AvatarFallback>
+                        <UserIcon />
+                    </AvatarFallback>
+                </Avatar>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -55,7 +51,7 @@ export default function UserDialog({
                         </Avatar>
                         <div className="flex flex-col text-sm">
                             <p>{user?.email || user?.name}</p>
-                            <p>{`Remaining credits: ${credits?.toFixed(2)}`}</p>
+                            <p>{`Remaining credits: ${userCredits?.toFixed(2)}`}</p>
                         </div>
                     </div>
                 </div>
