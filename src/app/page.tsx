@@ -30,9 +30,11 @@ export const metadata: Metadata = {
         "frontend testing utilities",
         "JSON data generator",
         "CSV data generator",
+        "XML data generator",
         "SQL data generator",
         "export mock data to JSON",
         "export mock data to CSV",
+        "export mock data to XML",
         "export mock data to SQL",
         "structured data formats",
         "data generation for testing",
@@ -112,7 +114,7 @@ export default function Home() {
                             <li className="flex items-start">
                                 <Download className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
                                 <span>
-                                    Export data in JSON, CSV, or SQL formats for
+                                    Export data in JSON, CSV, XML, or SQL formats for
                                     various use cases
                                 </span>
                             </li>
