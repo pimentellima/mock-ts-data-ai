@@ -10,7 +10,6 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { User } from "@/types/next-auth"
-import { useQuery } from "@tanstack/react-query"
 import { UserIcon } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
