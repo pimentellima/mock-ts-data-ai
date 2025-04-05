@@ -7,7 +7,60 @@ import { useState } from "react"
 import { Button } from "./ui/button"
 import { Label } from "./ui/label"
 import { useToast } from "./ui/use-toast"
+import { toXML } from "jstoxml"
 import useClipboard from "@/app/hooks/use-clipboard"
+
+function downloadXml(results: GenerationResult[]) {
+    const combined = results.reduce((acc, result) => {
+        acc[result.name] = JSON.parse(result.json)
+        return acc
+    }, {} as Record<string, any>)
+    const xmlData = toXML({ results: combined })
+    const blob = new Blob([xmlData], {
+        type: "text/xml",
+    })
+    saveAs(blob, "mock-data.xml")
+}
+
+async function downloadCsv(results: GenerationResult[]) {
+    const zip = new JSZip()
+
+    results.forEach(async (result) => {
+        try {
+            const jsonData = JSON.parse(result.json)
+            if (!Array.isArray(jsonData)) {
+                console.error(
+                    `Invalid JSON format for ${result.name}, expected an array.`
+                )
+                return
+            }
+
+            const csvHeader = Object.keys(jsonData[0]).join(",") + "\n"
+            const csvRows = jsonData
+                .map((obj) => Object.values(obj).join(","))
+                .join("\n")
+            const csvContent = csvHeader + csvRows
+
+            zip.file(`${result.name}.csv`, csvContent)
+        } catch (error) {
+            console.error(`Error processing ${result.name}:`, error)
+        }
+    })
+
+    const zipBlob = await zip.generateAsync({ type: "blob" })
+    saveAs(zipBlob, "generation_results.zip")
+}
+function downloadJson(results: GenerationResult[]) {
+    const combined = results.length > 1 ? results.reduce((acc, result) => {
+        acc[result.name] = JSON.parse(result.json)
+        return acc
+    }, {} as Record<string, any>) : JSON.parse(results[0].json)
+
+    const blob = new Blob([JSON.stringify(combined, null, 2)], {
+        type: "application/json",
+    })
+    saveAs(blob, "mock-data.json")
+}
 
 export default function ExportResultsControls({
     results,
@@ -15,7 +68,9 @@ export default function ExportResultsControls({
     results?: GenerationResult[]
 }) {
     const { toast } = useToast()
-    const [exportFormat, setExportFormat] = useState("json")
+    const [exportFormat, setExportFormat] = useState<
+        "json" | "csv" | "xml" | "sql"
+    >("json")
     const clipboard = useClipboard()
     const copyToClipboard = () => {
         if (!results) return
@@ -30,61 +85,18 @@ export default function ExportResultsControls({
     const downloadResults = async () => {
         if (!results) return
         if (exportFormat === "csv") {
-            const zip = new JSZip()
-
-            results.forEach(async (result) => {
-                try {
-                    const jsonData = JSON.parse(result.json)
-                    if (!Array.isArray(jsonData)) {
-                        console.error(
-                            `Invalid JSON format for ${result.name}, expected an array.`
-                        )
-                        return
-                    }
-
-                    const csvHeader = Object.keys(jsonData[0]).join(",") + "\n"
-                    const csvRows = jsonData
-                        .map((obj) => Object.values(obj).join(","))
-                        .join("\n")
-                    const csvContent = csvHeader + csvRows
-
-                    zip.file(`${result.name}.csv`, csvContent)
-                } catch (error) {
-                    console.error(`Error processing ${result.name}:`, error)
-                }
-            })
-
-            const zipBlob = await zip.generateAsync({ type: "blob" })
-            saveAs(zipBlob, "generation_results.zip")
-            toast({
-                title: "CSV Export",
-                description:
-                    "For multiple types, each type will be exported as a separate JSON file",
-            })
+            await downloadCsv(results)
+        } else if (exportFormat === "json") {
+            downloadJson(results)
         } else {
-            const element = document.createElement("a")
-            const combined = results.reduce((acc, result) => {
-                acc[result.name] = JSON.parse(result.json)
-                return acc
-            }, {} as Record<string, any>)
-
-            let content = JSON.stringify(combined, null, 2)
-            let mimeType = "application/json"
-            let extension = "json"
-
-            const blob = new Blob([content], { type: mimeType })
-            element.href = URL.createObjectURL(blob)
-            element.download = `mock-data.${extension}`
-            document.body.appendChild(element)
-            element.click()
-            document.body.removeChild(element)
+            downloadXml(results)
         }
         toast({
             title: "Download started",
             description: `Data exported as ${exportFormat.toUpperCase()}`,
         })
     }
-    
+
     return (
         <div className="flex items-center justify-between">
             <div className="flex gap-2 items-center">
@@ -107,6 +119,14 @@ export default function ExportResultsControls({
                         onClick={() => setExportFormat("csv")}
                     >
                         CSV
+                    </Button>
+                    <Button
+                        variant={exportFormat === "xml" ? "secondary" : "ghost"}
+                        size="sm"
+                        className="rounded-none border-x"
+                        onClick={() => setExportFormat("xml")}
+                    >
+                        XML
                     </Button>
                     <Button
                         disabled
