@@ -87,8 +87,7 @@ export function CreditPurchaseForm() {
                 <CardHeader>
                     <CardTitle>Select Credits Amount</CardTitle>
                     <CardDescription>
-                        Choose how many credits you want to purchase. 1 credit
-                        lets you generate 25 items.
+                        Choose how many credits you want to purchase. 
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
