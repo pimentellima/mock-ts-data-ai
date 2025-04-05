@@ -78,8 +78,9 @@ export async function purchaseCredits(credits: number) {
     if (!user) {
         redirect(`sign-in?redirect=buy-credits`)
     }
-    const amountInCents = parseFloat((credits / CREDITS_PER_DOLLAR).toFixed(2)) * 100
-    if (amountInCents < 1) return "Invalid amount"
+    const amount = parseFloat((credits / CREDITS_PER_DOLLAR).toFixed(2))
+    if (amount < 1 || amount > 9999) return "Invalid amount"
+    const amountInCents = amount * 100
 
     const checkoutSession = await stripe.checkout.sessions.create({
         client_reference_id: user.id,
