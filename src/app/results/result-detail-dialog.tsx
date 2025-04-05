@@ -4,8 +4,8 @@ import ApiEndpointSelect from "@/components/api-config/api-endpoint-select"
 import ApiUsageExamplesTabs from "@/components/api-config/api-usage-examples-tabs"
 import EndpointsDocAccordion from "@/components/api-config/endpoints-doc-accordion"
 import TestApiControls from "@/components/api-config/test-api-controls"
-import ExportResultsControls from "@/components/export-results-controls"
-import ResultsDisplay from "@/components/results-display"
+import ExportResultsControls from "@/components/results/export-results-controls"
+import ResultsDisplay from "@/components/results/results-display"
 import { Badge } from "@/components/ui/badge"
 import {
     Dialog,
@@ -117,8 +117,6 @@ export default function ResultDetailDialog({
                 {result.apiEnabled && apiEndpoints.length > 0 && (
                     <DialogFooter className="bg-background p-3 rounded-md border place-self-end w-min sticky bottom-0 z-10">
                         <TestApiControls
-                            isLoading={isLoading}
-                            setIsLoading={setIsLoading}
                             currentApiUrl={currentApiUrl}
                             selectedApi={selectedApi}
                         />

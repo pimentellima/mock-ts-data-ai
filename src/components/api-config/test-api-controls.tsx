@@ -15,16 +15,13 @@ import useClipboard from "@/app/hooks/use-clipboard"
 interface TestApiControlsProps {
     currentApiUrl: string
     selectedApi: string
-    isLoading: boolean
-    setIsLoading: (loading: boolean) => void
 }
 
 export default function TestApiControls({
     currentApiUrl,
     selectedApi,
-    isLoading,
-    setIsLoading,
 }: TestApiControlsProps) {
+    const [isLoading, setIsLoading] = useState(false)
     const [testDialogOpen, setTestDialogOpen] = useState(false)
     const [testTabValue, setTestTabValue] = useState("all")
     const [testEndpoint, setTestEndpoint] = useState("")

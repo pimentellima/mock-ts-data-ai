@@ -3,7 +3,7 @@
 import { generateMockData } from "@/app/actions"
 import CodeEditor from "@/components/code-editor"
 import RelationshipEditor from "@/components/relationship-editor"
-import ResultsDisplay from "@/components/results-display"
+import ResultsDisplay from "@/components/results/results-display"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,29 +15,39 @@ import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/components/ui/use-toast"
 import { GenerationResult, Relationship, TypeDefinition } from "@/types/types"
 import { Plus, Server, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ApiEndpointSelect from "./api-config/api-endpoint-select"
 import ApiUsageExamplesTabs from "./api-config/api-usage-examples-tabs"
 import EndpointsDocAccordion from "./api-config/endpoints-doc-accordion"
-import ExportResultsControls from "./export-results-controls"
+import ExportResultsControls from "./results/export-results-controls"
 import TestApiControls from "./api-config/test-api-controls"
 import { ITEMS_PER_CREDIT } from "@/constants"
 import { formatCredits } from "@/lib/format-credits"
+import { useSession } from "next-auth/react"
+import { ToastAction } from "./ui/toast"
+import Link from "next/link"
 
 export default function DataGenerator() {
-    const [typeDefinitions, setTypeDefinitions] = useState<TypeDefinition[]>([
-        {
-            id: "1",
-            name: "User",
-            code: "interface User {\n  id: number;\n  name: string;\n  email: string;\n  age?: number;\n}",
-            count: 15,
-        },
-    ])
+    const session = useSession()
+    const [formData, setFormData] = useState<{
+        typeDefinitions: TypeDefinition[]
+        description: string
+        relationships: Relationship[]
+    }>({
+        typeDefinitions: [
+            {
+                id: "1",
+                name: "User",
+                code: "interface User {\n  id: number;\n  name: string;\n  email: string;\n  age?: number;\n}",
+                count: 15,
+            },
+        ],
+        description: "",
+        relationships: [],
+    })
     const [apiEndpoints, setApiEndpoints] = useState<
         { name: string; url: string }[]
     >([])
-    const [description, setDescription] = useState("")
-    const [relationships, setRelationships] = useState<Relationship[]>([])
     const [results, setResults] = useState<GenerationResult[]>()
     const [isGenerating, setIsGenerating] = useState(false)
     const [activeTab, setActiveTab] = useState("editor")
@@ -48,24 +58,33 @@ export default function DataGenerator() {
     const currentApiUrl =
         apiEndpoints.find((e) => e.name === selectedApi)?.url || ""
 
-    const [isLoading, setIsLoading] = useState(false)
+    useEffect(() => {
+        const formData = localStorage.getItem("formData")
+        if (formData) {
+            setFormData(JSON.parse(formData))
+            localStorage.removeItem("formData")
+        }
+    }, [])
+
     const totalCredits =
-        typeDefinitions.reduce((acc, def) => acc + def.count, 0) /
+        formData.typeDefinitions.reduce((acc, def) => acc + def.count, 0) /
         ITEMS_PER_CREDIT
 
     const addTypeDefinition = () => {
         const newId = String(Date.now())
-        setTypeDefinitions([
-            ...typeDefinitions,
+        const oldTypeDefinitions = formData.typeDefinitions
+        const typeDefinitions = [
+            ...oldTypeDefinitions,
             {
                 id: newId,
-                name: `Type${typeDefinitions.length + 1}`,
+                name: `Type${oldTypeDefinitions.length + 1}`,
                 code: `interface ${`Type${
-                    typeDefinitions.length + 1
+                    oldTypeDefinitions.length + 1
                 }`} {\n  id: number;\n  name: string;\n}`,
                 count: 10,
             },
-        ])
+        ]
+        setFormData({ ...formData, typeDefinitions })
     }
 
     const updateTypeDefinition = (
@@ -73,8 +92,9 @@ export default function DataGenerator() {
         field: "name" | "code",
         value: string
     ) => {
-        setTypeDefinitions(
-            typeDefinitions.map((def) => {
+        setFormData({
+            ...formData,
+            typeDefinitions: formData.typeDefinitions.map((def) => {
                 if (def.id === id) {
                     // Create updated definition with the changed field
                     const updatedDef = { ...def, [field]: value }
@@ -148,18 +168,23 @@ export default function DataGenerator() {
                     return updatedDef
                 }
                 return def
-            })
-        )
+            }),
+        })
     }
     const removeTypeDefinition = (id: string) => {
-        if (typeDefinitions.length > 1) {
-            setTypeDefinitions(typeDefinitions.filter((def) => def.id !== id))
-            // Also remove any relationships involving this type
-            setRelationships(
-                relationships.filter(
+        if (formData.typeDefinitions.length > 1) {
+            setFormData({
+                ...formData,
+                typeDefinitions: formData.typeDefinitions.filter(
+                    (def) => def.id !== id
+                ),
+            })
+            setFormData({
+                ...formData,
+                relationships: formData.relationships.filter(
                     (rel) => rel.sourceId !== id && rel.targetId !== id
-                )
-            )
+                ),
+            })
         } else {
             toast({
                 title: "Cannot remove",
@@ -168,16 +193,26 @@ export default function DataGenerator() {
             })
         }
     }
-
     const generateData = async () => {
         setIsGenerating(true)
-
-        try {
-            const result = await generateMockData({
-                relationships,
-                typeDefinitions,
-                description,
+        if (!session.data?.user) {
+            localStorage.setItem("formData", JSON.stringify(formData))
+            toast({
+                title: "You need to sign in to generate data",
+                variant: "destructive",
+                action: (
+                    <ToastAction altText="Sign in ">
+                        <Button asChild variant="link">
+                            <Link href="/sign-in">Sign in</Link>
+                        </Button>
+                    </ToastAction>
+                ),
             })
+            setIsGenerating(false)
+            return
+        }
+        try {
+            const result = await generateMockData(formData)
             if (result.error) {
                 toast({
                     title: "Generation failed",
@@ -205,17 +240,18 @@ export default function DataGenerator() {
                 variant: "destructive",
             })
         } finally {
+            localStorage.removeItem("formData")
             setIsGenerating(false)
         }
     }
 
-    // Add a function to update the count for a specific type
     const updateTypeCount = (id: string, count: number) => {
-        setTypeDefinitions(
-            typeDefinitions.map((def) =>
+        setFormData({
+            ...formData,
+            typeDefinitions: formData.typeDefinitions.map((def) =>
                 def.id === id ? { ...def, count } : def
-            )
-        )
+            ),
+        })
     }
 
     const enableApiEndpoint = async () => {
@@ -241,7 +277,7 @@ export default function DataGenerator() {
                     <Card>
                         <CardContent className="pt-6">
                             <div className="space-y-6">
-                                {typeDefinitions.map((def, index) => (
+                                {formData.typeDefinitions.map((def, index) => (
                                     <div
                                         key={def.id}
                                         className="space-y-2 border-b pb-6 last:border-0 last:pb-0"
@@ -276,7 +312,6 @@ export default function DataGenerator() {
                                                 <Input
                                                     id={`count-${def.id}`}
                                                     type="number"
-                                                    min="1"
                                                     max="100"
                                                     value={def.count}
                                                     onChange={(e) =>
@@ -284,7 +319,7 @@ export default function DataGenerator() {
                                                             def.id,
                                                             Number.parseInt(
                                                                 e.target.value
-                                                            ) || 1
+                                                            )
                                                         )
                                                     }
                                                     className="w-20"
@@ -298,8 +333,8 @@ export default function DataGenerator() {
                                                         )
                                                     }
                                                     disabled={
-                                                        typeDefinitions.length <=
-                                                        1
+                                                        formData.typeDefinitions
+                                                            .length <= 1
                                                     }
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -352,9 +387,12 @@ export default function DataGenerator() {
                                 <Textarea
                                     id="description"
                                     placeholder="E.g., Generate realistic user data with names, emails, and ages between 18-65"
-                                    value={description}
+                                    value={formData.description}
                                     onChange={(e) =>
-                                        setDescription(e.target.value)
+                                        setFormData({
+                                            ...formData,
+                                            description: e.target.value,
+                                        })
                                     }
                                     rows={3}
                                 />
@@ -367,9 +405,14 @@ export default function DataGenerator() {
                     <Card>
                         <CardContent className="pt-6">
                             <RelationshipEditor
-                                types={typeDefinitions}
-                                relationships={relationships}
-                                setRelationships={setRelationships}
+                                types={formData.typeDefinitions}
+                                relationships={formData.relationships}
+                                setRelationships={(relationships) =>
+                                    setFormData({
+                                        ...formData,
+                                        relationships,
+                                    })
+                                }
                             />
                         </CardContent>
                     </Card>
@@ -427,8 +470,6 @@ export default function DataGenerator() {
                                             endpoints={apiEndpoints}
                                         />
                                         <TestApiControls
-                                            isLoading={isLoading}
-                                            setIsLoading={setIsLoading}
                                             currentApiUrl={currentApiUrl}
                                             selectedApi={selectedApi}
                                         />
@@ -439,15 +480,19 @@ export default function DataGenerator() {
                     </Card>
                 </TabsContent>
             </Tabs>
-            <Button
-                onClick={generateData}
-                disabled={isGenerating}
-                className="w-full"
-            >
-                {isGenerating
-                    ? "Generating..."
-                    : `Generate Data (${formatCredits(totalCredits)} credits)`}
-            </Button>
+            {activeTab !== "results" && (
+                <Button
+                    onClick={generateData}
+                    disabled={isGenerating}
+                    className="w-full"
+                >
+                    {isGenerating
+                        ? "Generating..."
+                        : `Generate Data (${formatCredits(
+                              totalCredits
+                          )} credits)`}
+                </Button>
+            )}
             <Toaster />
         </div>
     )

@@ -19,6 +19,7 @@ export default function ResultsDisplay({
     activeTab,
     setActiveTab,
 }: ResultsDisplayProps) {
+
     useEffect(() => {
         if (!results || results.length === 0) return
         if (results.length > 0 && !results.some((r) => r.name === activeTab)) {
