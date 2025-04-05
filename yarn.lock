@@ -251,6 +251,11 @@
     "@babel/helper-validator-identifier" "^7.24.6"
     to-fast-properties "^2.0.0"
 
+"@e965/xlsx@^0.20.0":
+  version "0.20.3"
+  resolved "https://registry.npmjs.org/@e965/xlsx/-/xlsx-0.20.3.tgz"
+  integrity sha512-703RN/3OdsRD5mtse2HBX7Um7xwaP9tlswEG6svOtjqokXoX7rJdQj7DyabD2I+xk22RgaIIU+R6BHgkpZGB/w==
+
 "@esbuild-kit/core-utils@^3.3.2":
   version "3.3.2"
   resolved "https://registry.npmjs.org/@esbuild-kit/core-utils/-/core-utils-3.3.2.tgz"
@@ -2484,6 +2489,13 @@ jsesc@^2.5.1:
   version "2.5.2"
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
+
+json-as-xlsx@^2.5.6:
+  version "2.5.6"
+  resolved "https://registry.npmjs.org/json-as-xlsx/-/json-as-xlsx-2.5.6.tgz"
+  integrity sha512-z7phlB+VgS9wZv2N4SBKlguC3C7uauSj2PYSZICCrPaiu1lu8zkCpzZ4sOHWi0/3Je0CJl87q+J+3mpZbxpOew==
+  dependencies:
+    "@e965/xlsx" "^0.20.0"
 
 json-parse-even-better-errors@^2.3.1:
   version "2.3.1"

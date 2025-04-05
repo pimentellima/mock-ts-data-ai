@@ -9,6 +9,39 @@ import { Label } from "./ui/label"
 import { useToast } from "./ui/use-toast"
 import { toXML } from "jstoxml"
 import useClipboard from "@/app/hooks/use-clipboard"
+import xlsx from "json-as-xlsx"
+
+async function downloadXlsx(results: GenerationResult[]) {
+    const zip = new JSZip()
+
+    results.forEach(async (result) => {
+        const json = JSON.parse(result.json)
+        const buffer = xlsx(
+            [
+                {
+                    sheet: result.name,
+                    columns: Object.keys(json[0]).map((key) => ({
+                        label: key,
+                        value: key,
+                    })),
+                    content: json,
+                },
+            ],
+            {
+                writeOptions: {
+                    type: "buffer",
+                    bookType: "xlsx",
+                },
+            }
+        )
+        const blob = new Blob([buffer!], {
+            type: "",
+        })
+        zip.file(`${result.name}.xlsx`, blob)
+    })
+    const zipBlob = await zip.generateAsync({ type: "blob" })
+    saveAs(zipBlob, "generation_results.zip")
+}
 
 function downloadXml(results: GenerationResult[]) {
     const combined = results.reduce((acc, result) => {
@@ -26,35 +59,34 @@ async function downloadCsv(results: GenerationResult[]) {
     const zip = new JSZip()
 
     results.forEach(async (result) => {
-        try {
-            const jsonData = JSON.parse(result.json)
-            if (!Array.isArray(jsonData)) {
-                console.error(
-                    `Invalid JSON format for ${result.name}, expected an array.`
-                )
-                return
-            }
-
-            const csvHeader = Object.keys(jsonData[0]).join(",") + "\n"
-            const csvRows = jsonData
-                .map((obj) => Object.values(obj).join(","))
-                .join("\n")
-            const csvContent = csvHeader + csvRows
-
-            zip.file(`${result.name}.csv`, csvContent)
-        } catch (error) {
-            console.error(`Error processing ${result.name}:`, error)
+        const jsonData = JSON.parse(result.json)
+        if (!Array.isArray(jsonData)) {
+            console.error(
+                `Invalid JSON format for ${result.name}, expected an array.`
+            )
+            return
         }
+
+        const csvHeader = Object.keys(jsonData[0]).join(",") + "\n"
+        const csvRows = jsonData
+            .map((obj) => Object.values(obj).join(","))
+            .join("\n")
+        const csvContent = csvHeader + csvRows
+
+        zip.file(`${result.name}.csv`, csvContent)
     })
 
     const zipBlob = await zip.generateAsync({ type: "blob" })
     saveAs(zipBlob, "generation_results.zip")
 }
 function downloadJson(results: GenerationResult[]) {
-    const combined = results.length > 1 ? results.reduce((acc, result) => {
-        acc[result.name] = JSON.parse(result.json)
-        return acc
-    }, {} as Record<string, any>) : JSON.parse(results[0].json)
+    const combined =
+        results.length > 1
+            ? results.reduce((acc, result) => {
+                  acc[result.name] = JSON.parse(result.json)
+                  return acc
+              }, {} as Record<string, any>)
+            : JSON.parse(results[0].json)
 
     const blob = new Blob([JSON.stringify(combined, null, 2)], {
         type: "application/json",
@@ -69,7 +101,7 @@ export default function ExportResultsControls({
 }) {
     const { toast } = useToast()
     const [exportFormat, setExportFormat] = useState<
-        "json" | "csv" | "xml" | "sql"
+        "json" | "csv" | "xml" | "xlsx" | "sql"
     >("json")
     const clipboard = useClipboard()
     const copyToClipboard = () => {
@@ -84,17 +116,37 @@ export default function ExportResultsControls({
 
     const downloadResults = async () => {
         if (!results) return
-        if (exportFormat === "csv") {
-            await downloadCsv(results)
-        } else if (exportFormat === "json") {
-            downloadJson(results)
-        } else {
-            downloadXml(results)
+
+        try {
+            switch (exportFormat) {
+                case "csv":
+                    await downloadCsv(results)
+                    break
+                case "json":
+                    downloadJson(results)
+                    break
+                case "xml":
+                    downloadXml(results)
+                    break
+                case "xlsx":
+                    await downloadXlsx(results)
+                    break
+                default:
+                    console.error("Unsupported export format")
+                    return
+            }
+            toast({
+                title: "Download started",
+                description: `Data exported as ${exportFormat.toUpperCase()}`,
+            })
+        } catch (e) {
+            console.error("Error downloading results:", e)
+            toast({
+                title: "Download failed",
+                description: `Failed to export data as ${exportFormat.toUpperCase()}`,
+                variant: "destructive",
+            })
         }
-        toast({
-            title: "Download started",
-            description: `Data exported as ${exportFormat.toUpperCase()}`,
-        })
     }
 
     return (
@@ -127,6 +179,16 @@ export default function ExportResultsControls({
                         onClick={() => setExportFormat("xml")}
                     >
                         XML
+                    </Button>
+                    <Button
+                        variant={
+                            exportFormat === "xlsx" ? "secondary" : "ghost"
+                        }
+                        size="sm"
+                        className="rounded-none border-x"
+                        onClick={() => setExportFormat("xlsx")}
+                    >
+                        XLSX
                     </Button>
                     <Button
                         disabled
